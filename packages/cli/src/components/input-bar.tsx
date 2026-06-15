@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir, readFile, access } from "node:fs/promises";
 import { isAbsolute, relative, resolve } from "node:path";
 
 import { useRef, useState, useCallback, useEffect, type RefObject } from "react";
@@ -20,12 +20,62 @@ import { useDialog } from "../providers/dialog";
 import { useTheme } from "../providers/theme";
 import { usePromptConfig } from "../providers/prompt-config";
 import { Mode } from "@prismcode/shared";
+import type { ImageAttachment } from "../hooks/use-chat";
 
 const MAX_VISIBLE_MENTIONS = 8;
 const CURRENT_DIRECTORY = process.cwd();
 const MAX_FALLBACK_MENTION_CANDIDATES = 32;
 const MENTION_QUERY_CHARACTER = /[A-Za-z0-9._/-]/;
 const RECURSIVE_MENTION_IGNORED_DIRECTORIES = new Set(["node_modules"]);
+
+const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp"]);
+const IMAGE_MIME_TYPES: Record<string, string> = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".bmp": "image/bmp",
+};
+
+function isImagePath(path: string): boolean {
+  const dot = path.lastIndexOf(".");
+  if (dot === -1) return false;
+  return IMAGE_EXTENSIONS.has(path.slice(dot).toLowerCase());
+}
+
+async function extractImageAttachments(text: string): Promise<{
+  text: string;
+  images: ImageAttachment[];
+}> {
+  const tokens = text.split(/(\s+)/);
+  const images: ImageAttachment[] = [];
+  const keptTokens: string[] = [];
+
+  for (const token of tokens) {
+    if (isImagePath(token)) {
+      const resolvedPath = resolve(CURRENT_DIRECTORY, token);
+      try {
+        await access(resolvedPath);
+        const buffer = await readFile(resolvedPath);
+        const ext = token.slice(token.lastIndexOf(".")).toLowerCase();
+        const mimeType = IMAGE_MIME_TYPES[ext] ?? "image/png";
+        const base64 = buffer.toString("base64");
+        images.push({
+          path: token,
+          dataUrl: `data:${mimeType};base64,${base64}`,
+          mimeType,
+        });
+        continue;
+      } catch {
+        // file doesn't exist, keep as text
+      }
+    }
+    keptTokens.push(token);
+  }
+
+  return { text: keptTokens.join(""), images };
+}
 
 type MentionMatch = {
   start: number;
@@ -258,7 +308,7 @@ function FileMentionMenu({
 };
 
 type Props = {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, images?: ImageAttachment[]) => void;
   disabled?: boolean;
 };
 
@@ -344,16 +394,17 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
     syncMentionMenu(text, textarea.cursorOffset);
   }, [handleContentChange, syncMentionMenu]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (disabled) return;
 
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const text = textarea.plainText.trim();
-    if (text.length === 0) return;
+    const rawText = textarea.plainText.trim();
+    if (rawText.length === 0) return;
 
-    onSubmit(text);
+    const { text, images } = await extractImageAttachments(rawText);
+    onSubmit(text, images.length > 0 ? images : undefined);
     textarea.setText("");
   }, [disabled, onSubmit])
 
@@ -468,7 +519,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
       }
     }
 
-    handleSubmit();
+    void handleSubmit();
   };
 
   useKeyboard((key) => {

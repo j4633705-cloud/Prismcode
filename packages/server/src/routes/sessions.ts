@@ -19,6 +19,16 @@ const createSessionValidator = zValidator(
   }
 });
 
+const searchSchema = z.object({
+  q: z.string().min(1),
+});
+
+const searchValidator = zValidator("query", searchSchema, (result, c) => {
+  if (!result.success) {
+    return c.json({ error: "Missing search query" }, 400);
+  }
+});
+
 const app = new Hono<AuthenticatedEnv>()
   .get("/", async (c) => {
     const userId = c.get("userId");
@@ -34,6 +44,62 @@ const app = new Hono<AuthenticatedEnv>()
     });
 
     return c.json(sessions);
+  })
+  .get("/search", searchValidator, async (c) => {
+    const userId = c.get("userId");
+    const { q } = c.req.valid("query");
+    const query = q.toLowerCase();
+
+    const sessions = await db.session.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        messages: true,
+      },
+    });
+
+    const results: {
+      sessionId: string;
+      sessionTitle: string;
+      createdAt: string;
+      matchCount: number;
+      matches: { role: string; preview: string }[];
+    }[] = [];
+
+    for (const session of sessions) {
+      const messages = (session.messages as unknown as { role: string; parts: { type: string; text?: string }[] }[]) ?? [];
+      const matches: { role: string; preview: string }[] = [];
+
+      for (const msg of messages) {
+        const text = msg.parts
+          ?.filter((p) => p.type === "text")
+          .map((p) => p.text ?? "")
+          .join(" ") ?? "";
+
+        if (text.toLowerCase().includes(query)) {
+          const idx = text.toLowerCase().indexOf(query);
+          const start = Math.max(0, idx - 60);
+          const end = Math.min(text.length, idx + query.length + 60);
+          const preview = (start > 0 ? "..." : "") + text.slice(start, end) + (end < text.length ? "..." : "");
+          matches.push({ role: msg.role, preview });
+        }
+      }
+
+      if (matches.length > 0) {
+        results.push({
+          sessionId: session.id,
+          sessionTitle: session.title,
+          createdAt: session.createdAt.toISOString(),
+          matchCount: matches.length,
+          matches: matches.slice(0, 3),
+        });
+      }
+    }
+
+    return c.json(results);
   })
   .get("/:id", async (c) => {
     // MOCK: Uncomment to simulate slow session loading

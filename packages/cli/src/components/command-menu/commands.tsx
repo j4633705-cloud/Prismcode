@@ -4,6 +4,7 @@ import {
   ModelsDialogContent,
   SessionsDialogContent,
   ThemeDialogContent,
+  SearchDialogContent,
 } from "../dialogs";
 import type { Command } from "./types";
 
@@ -134,6 +135,17 @@ export const COMMANDS: Command[] = [
         const message = error instanceof Error ? error.message : "Failed to open billing portal";
         ctx.toast.show({ variant: "error", message });
       }
+    },
+  },
+  {
+    name: "search",
+    description: "Search past conversations",
+    value: "/search",
+    action: (ctx) => {
+      ctx.dialog.open({
+        title: "Search Conversations",
+        children: <SearchDialogContent />,
+      });
     },
   },
   {

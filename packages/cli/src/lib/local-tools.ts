@@ -27,7 +27,7 @@ function truncate(value: string, limit: number) {
 }
 
 export async function executeLocalTool(toolName: string, input: unknown, mode: ModeType) {
-  if (mode === Mode.PLAN && !["readFile", "listDirectory", "glob", "grep"].includes(toolName)) {
+  if (mode === Mode.PLAN && !["readFile", "listDirectory", "glob", "grep", "webSearch", "gitStatus", "gitLog", "gitDiff"].includes(toolName)) {
     throw new Error(`Tool ${toolName} is not available in PLAN mode`);
   }
 
@@ -162,6 +162,108 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
         stdout: truncate(stdout, MAX_OUTPUT),
         stderr: truncate(stderr, MAX_OUTPUT),
         exitCode,
+      };
+    }
+    case "gitStatus": {
+      const proc = Bun.spawn(["git", "status", "--short"], {
+        cwd: process.cwd(),
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [stdout, stderr] = await Promise.all([
+        new Response(proc.stdout).text(),
+        new Response(proc.stderr).text(),
+      ]);
+      const exitCode = await proc.exited;
+      if (exitCode !== 0) throw new Error(`git status failed: ${stderr.trim()}`);
+      return { status: stdout || "Working tree clean" };
+    }
+    case "gitLog": {
+      const { maxCount } = toolInputSchemas.gitLog.parse(input);
+      const proc = Bun.spawn(["git", "log", `--max-count=${maxCount}`, "--oneline", "--decorate"], {
+        cwd: process.cwd(),
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [stdout, stderr] = await Promise.all([
+        new Response(proc.stdout).text(),
+        new Response(proc.stderr).text(),
+      ]);
+      const exitCode = await proc.exited;
+      if (exitCode !== 0) throw new Error(`git log failed: ${stderr.trim()}`);
+      return { log: stdout || "(no commits)" };
+    }
+    case "gitDiff": {
+      const { path, staged } = toolInputSchemas.gitDiff.parse(input);
+      const args = ["diff"];
+      if (staged) args.push("--staged");
+      if (path) args.push(path);
+      const proc = Bun.spawn(args, {
+        cwd: process.cwd(),
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [stdout, stderr] = await Promise.all([
+        new Response(proc.stdout).text(),
+        new Response(proc.stderr).text(),
+      ]);
+      const exitCode = await proc.exited;
+      if (exitCode !== 0) throw new Error(`git diff failed: ${stderr.trim()}`);
+      return { diff: stdout || "(no changes)" };
+    }
+    case "gitCommit": {
+      const { message, addAll } = toolInputSchemas.gitCommit.parse(input);
+      if (addAll) {
+        const add = Bun.spawn(["git", "add", "-A"], {
+          cwd: process.cwd(),
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        await add.exited;
+      }
+      const proc = Bun.spawn(["git", "commit", "-m", message], {
+        cwd: process.cwd(),
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const [stdout, stderr] = await Promise.all([
+        new Response(proc.stdout).text(),
+        new Response(proc.stderr).text(),
+      ]);
+      const exitCode = await proc.exited;
+      if (exitCode !== 0) throw new Error(`git commit failed: ${stderr.trim()}`);
+      return { success: true, output: stdout.trim() };
+    }
+    case "webSearch": {
+      const { query, numResults } = toolInputSchemas.webSearch.parse(input);
+      const maxResults = Math.min(Math.max(1, numResults), 10);
+
+      const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+      const response = await fetch(searchUrl, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; PrismCode/1.0)" },
+        signal: AbortSignal.timeout(15000),
+      });
+      const html = await response.text();
+
+      const results: { title: string; snippet: string; url: string }[] = [];
+      const resultRegex = /<a[^>]*class="result__a"[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<a[^>]*class="result__snippet"[^>]*>([\s\S]*?)<\/a>/gi;
+      let match: RegExpExecArray | null;
+
+      while ((match = resultRegex.exec(html)) !== null && results.length < maxResults) {
+        const url = match[1]!.replace(/\/\/duckduckgo\.com\/l\/\?uddg=/, "").replace(/&rut=.*$/, "");
+        const title = match[2]!.replace(/<[^>]+>/g, "").trim();
+        const snippet = match[3]!.replace(/<[^>]+>/g, "").trim();
+        results.push({
+          url: decodeURIComponent(url),
+          title,
+          snippet,
+        });
+      }
+
+      return {
+        query,
+        results,
+        totalResults: results.length,
       };
     }
     default:

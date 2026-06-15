@@ -1,13 +1,15 @@
 import { Mode, type ModeType } from "@prismcode/shared";
 import { EmptyBorder } from "../border";
 import { useTheme } from "../../providers/theme";
+import type { ImageAttachment } from "../../hooks/use-chat";
 
 type Props = {
   message: string;
   mode: ModeType;
+  images?: ImageAttachment[];
 };
 
-export function UserMessage({ message, mode }: Props) {
+export function UserMessage({ message, mode, images }: Props) {
   const { colors } = useTheme();
 
   return (
@@ -28,7 +30,18 @@ export function UserMessage({ message, mode }: Props) {
           backgroundColor={colors.surface}
           width="100%"
         >
-          <text>{message}</text>
+          <box flexDirection="column" width="100%">
+            {images && images.length > 0 && (
+              <box flexDirection="row" gap={1} paddingBottom={1}>
+                {images.map((img, i) => (
+                  <text key={i} fg={colors.info}>
+                    {`[IMG] ${img.path}`}
+                  </text>
+                ))}
+              </box>
+            )}
+            <text>{message}</text>
+          </box>
         </box>
       </box>
     </box>

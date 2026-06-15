@@ -42,7 +42,23 @@ function ChatMessage(
       .map((p) => p.text)
       .join("");
 
-    return <UserMessage message={text} mode={msg.metadata?.mode ?? "BUILD"} />;
+    const images = msg.parts
+      .filter((p) => p.type === "image")
+      .map((p) => ({
+        path: typeof p.image === "string" && p.image.startsWith("data:")
+          ? "image"
+          : String(p.image ?? ""),
+        dataUrl: typeof p.image === "string" ? p.image : "",
+        mimeType: (p as { mimeType?: string }).mimeType ?? "image/png",
+      }));
+
+    return (
+      <UserMessage
+        message={text}
+        mode={msg.metadata?.mode ?? "BUILD"}
+        images={images.length > 0 ? images : undefined}
+      />
+    );
   }
 
   return (
@@ -99,7 +115,7 @@ function SessionChat({
 
   return (
     <SessionShell
-      onSubmit={(text) => submit({ userText: text, mode, model })}
+      onSubmit={(text, images) => submit({ userText: text, images, mode, model })}
       loading={status === "submitted" || status === "streaming"}
       interruptible={status === "submitted" || status === "streaming"}
     >

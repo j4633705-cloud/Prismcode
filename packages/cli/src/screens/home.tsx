@@ -10,7 +10,7 @@ export function Home() {
   const { mode, model } = usePromptConfig();
 
   const handleSubmit = useCallback(
-    (text: string) => {
+    (text: string, _images?: unknown) => {
       navigate("/sessions/new", { state: { message: text, mode, model } });
     },
     [navigate, mode, model],

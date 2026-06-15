@@ -28,6 +28,12 @@ type ChatTools = {
 
 export type Message = UIMessage<ChatMessageMetadata, never, ChatTools>;
 
+export type ImageAttachment = {
+  path: string;
+  dataUrl: string;
+  mimeType: string;
+};
+
 export function useChat(sessionId: string, initialMessages: Message[]) {
   const transport = useMemo(() => {
     return new DefaultChatTransport<Message>({
@@ -92,14 +98,35 @@ export function useChat(sessionId: string, initialMessages: Message[]) {
     messages: chat.messages,
     status: chat.status,
     error: chat.error,
-    submit: (params: { userText: string; mode: ModeType; model: SupportedChatModelId }) => {
+    submit: (params: {
+      userText: string;
+      images?: ImageAttachment[];
+      mode: ModeType;
+      model: SupportedChatModelId;
+    }) => {
+      if (params.images && params.images.length > 0) {
+        const parts: Message["parts"] = [
+          { type: "text" as const, text: params.userText },
+          ...params.images.map((img) => ({
+            type: "image" as const,
+            image: img.dataUrl,
+            mimeType: img.mimeType,
+          })),
+        ];
+        return chat.append({
+          role: "user",
+          parts,
+          metadata: { mode: params.mode, model: params.model },
+        });
+      }
+
       return chat.sendMessage({
         text: params.userText,
         metadata: {
           mode: params.mode,
           model: params.model,
         },
-      })
+      });
     },
     abort: chat.stop,
     interrupt: chat.stop,
