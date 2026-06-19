@@ -1,17 +1,35 @@
 {
-  "name": "@prismcode/database",
+  "name": "@prismcode543/database",
+  "version": "0.1.0",
   "type": "module",
-  "private": true,
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist/src",
+    "generated",
+    "prisma/*.prisma"
+  ],
   "exports": {
-    ".": "./src/index.ts",
-    "./client": "./src/client.ts"
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/src/client.js",
+      "types": "./dist/src/client.d.ts"
+    }
   },
   "scripts": {
-    "db:generate": "bunx prisma generate"
+    "build": "bun run build:js && bun run build:types",
+    "build:js": "bun build ./src/index.ts --outdir=dist/src --target bun --format=esm && bun build ./src/client.ts --outdir=dist/src --target bun --format=esm",
+    "build:types": "bunx tsc --emitDeclarationOnly --outDir dist",
+    "db:generate": "bunx prisma generate",
+    "prepublishOnly": "bun run build"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
-    "prisma": "^7.7.0"
+    "prisma": "^7.7.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",

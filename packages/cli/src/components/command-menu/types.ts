@@ -1,6 +1,6 @@
 import type { DialogContextValue } from "../../providers/dialog";
 import type { ToastContextValue } from "../../providers/toast";
-import type { ModeType, SupportedChatModelId } from "@prismcode/shared";
+import type { ModeType, SupportedChatModelId } from "@prismcode543/shared";
 
 export type CommandContext = {
   exit: () => void;

@@ -16,3 +16,12 @@ export {
   type ToolContracts,
   type ModeType,
 } from "./schemas";
+
+export {
+  prismCodeConfigSchema,
+  loadConfig,
+  DEFAULT_CONFIG,
+  type PrismCodeConfig,
+} from "./config";
+
+export * from "./skills";

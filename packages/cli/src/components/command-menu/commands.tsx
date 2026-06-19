@@ -1,10 +1,11 @@
-import { SUPPORTED_CHAT_MODELS } from "@prismcode/shared";
+import { SUPPORTED_CHAT_MODELS } from "@prismcode543/shared";
 import { 
   AgentsDialogContent,
   ModelsDialogContent,
   SessionsDialogContent,
   ThemeDialogContent,
   SearchDialogContent,
+  SkillsDialogContent,
 } from "../dialogs";
 import type { Command } from "./types";
 
@@ -135,6 +136,17 @@ export const COMMANDS: Command[] = [
         const message = error instanceof Error ? error.message : "Failed to open billing portal";
         ctx.toast.show({ variant: "error", message });
       }
+    },
+  },
+  {
+    name: "skills",
+    description: "Manage installed skills",
+    value: "/skills",
+    action: (ctx) => {
+      ctx.dialog.open({
+        title: "Skills",
+        children: <SkillsDialogContent />,
+      });
     },
   },
   {

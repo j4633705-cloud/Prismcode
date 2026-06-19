@@ -8,7 +8,7 @@ import {
   type SupportedChatModel,
   type SupportedChatModelId,
   type SupportedProvider,
-} from "@prismcode/shared";
+} from "@prismcode543/shared";
 import type { ProviderOptions } from "@ai-sdk/provider-utils";
 import type { LanguageModel } from "ai";
 

@@ -5,7 +5,8 @@
   "scripts": {
     "dev:cli": "bun run --watch packages/cli/src/index.tsx",
     "dev:server": "bun run --hot packages/server/src/index.ts",
-    "build:cli": "bun run --filter @prismcode/cli build",
+    "build:cli": "bun run --filter @prismcode543/cli build",
+    "build:binary": "bun build --compile --target=bun-windows-x64-modern --outfile=dist/prismcode ./packages/cli/src/index.tsx",
     "link:cli": "bun run build:cli && cd packages/cli && bun link"
   },
   "dependencies": {

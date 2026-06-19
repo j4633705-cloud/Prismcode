@@ -223,6 +223,7 @@ packages/
 │       ├── providers/           # Dialog, keyboard, prompt, theme, toast providers
 │       └── screens/             # Home, new session, and session screens
 ├── database/                    # Prisma schema, generated client, database exports
+├── mcp-server/                  # MCP server for agent tool execution
 ├── server/                      # Hono API for auth, billing, sessions, and chat
 └── shared/                      # Shared schemas, tool contracts, and model registry
 ```
@@ -234,6 +235,7 @@ packages/
 | `bun run dev:cli` | Start the CLI in watch mode |
 | `bun run dev:server` | Start the Hono server with hot reload |
 | `bun run build:cli` | Build the CLI package |
+| `bun run build:binary` | Compile the CLI into a standalone binary |
 | `bun run link:cli` | Build and link the `prismcode` executable |
 | `bun run --cwd packages/database db:generate` | Generate the Prisma client |
 
@@ -241,7 +243,8 @@ packages/
 
 | Package | Description |
 |---------|-------------|
-| `@prismcode/cli` | Terminal UI and client-side tool execution |
-| `@prismcode/server` | Hono API, AI streaming, auth checks, and billing ingestion |
-| `@prismcode/database` | Prisma client and database schema |
-| `@prismcode/shared` | Shared Zod schemas, AI tool contracts, and model definitions |
+| `@prismcode543/cli` | Terminal UI and client-side tool execution |
+| `@prismcode543/server` | Hono API, AI streaming, auth checks, and billing ingestion |
+| `@prismcode543/database` | Prisma client and database schema |
+| `@prismcode543/shared` | Shared Zod schemas, AI tool contracts, and model definitions |
+| `@prismcode543/mcp-server` | MCP server exposing project tools (read/write/edit, bash, glob, grep) |

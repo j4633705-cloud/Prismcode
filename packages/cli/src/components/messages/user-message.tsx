@@ -1,4 +1,4 @@
-import { Mode, type ModeType } from "@prismcode/shared";
+import { Mode, type ModeType } from "@prismcode543/shared";
 import { EmptyBorder } from "../border";
 import { useTheme } from "../../providers/theme";
 import type { ImageAttachment } from "../../hooks/use-chat";

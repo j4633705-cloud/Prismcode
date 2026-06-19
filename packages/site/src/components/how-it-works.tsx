@@ -1,0 +1,82 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Terminal, Search, Rocket } from "lucide-react";
+
+const steps = [
+  {
+    icon: Terminal,
+    title: "Install",
+    subtitle: "01",
+    desc: "Run one command in any project directory. No config files, no setup wizard.",
+    code: "npx @prismcode543/cli",
+  },
+  {
+    icon: Search,
+    title: "Analyze",
+    subtitle: "02",
+    desc: "Describe what you want. PrismCode reads your codebase and proposes a plan.",
+    code: "> add dark mode to settings",
+  },
+  {
+    icon: Rocket,
+    title: "Build",
+    subtitle: "03",
+    desc: "Toggle to build mode. Changes are implemented file by file, step by step.",
+    code: "[Tab] — BUILD mode · 4 files",
+  },
+];
+
+export function HowItWorks() {
+  return (
+    <section id="how-it-works" className="border-t border-neutral-800 py-24">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-16">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-2 text-xs text-neutral-500 uppercase tracking-[0.15em]"
+          >
+            How it works
+          </motion.p>
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl text-neutral-50">
+            From idea to shipped<br />in three steps
+          </h2>
+        </div>
+
+        <div className="relative grid gap-8 md:grid-cols-3">
+          {/* Connector */}
+          <div className="pointer-events-none absolute left-0 right-0 top-[52px] h-px hidden md:block">
+            <div className="h-full w-full bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800" />
+          </div>
+
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
+              className="relative flex flex-col"
+            >
+              <div className="relative z-10 mb-5 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950">
+                  <step.icon size={20} className="text-neutral-300" />
+                </div>
+                <span className="text-2xl font-light text-neutral-700">{step.subtitle}</span>
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-neutral-50">{step.title}</h3>
+              <p className="mb-5 max-w-xs text-sm leading-relaxed text-neutral-500">{step.desc}</p>
+              <div className="mt-auto w-full max-w-[260px] rounded-lg border border-neutral-800 bg-[#050505] px-3.5 py-2.5 font-mono text-xs text-neutral-500">
+                <span className="text-neutral-600">$</span>{" "}
+                <span className="text-neutral-300">{step.code}</span>
+                <span className="ml-0.5 h-3 w-1 animate-blink bg-neutral-400 inline-block align-middle" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

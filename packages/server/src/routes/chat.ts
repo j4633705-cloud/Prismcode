@@ -9,14 +9,14 @@ import {
   type LanguageModelUsage,
   type UIMessage,
 } from "ai";
-import { db } from "@prismcode/database/client";
-import type { Prisma } from "@prismcode/database";
+import { db } from "@prismcode543/database/client";
+import type { Prisma } from "@prismcode543/database";
 import { 
   getToolContracts, 
   modeSchema, 
   type ModeType, 
   type ToolContracts
-} from "@prismcode/shared";
+} from "@prismcode543/shared";
 import { buildSystemPrompt } from "../system-prompt";
 import type { AuthenticatedEnv } from "../middleware/require-auth";
 import { requireCreditsBalance } from "../middleware/require-credits-balance";

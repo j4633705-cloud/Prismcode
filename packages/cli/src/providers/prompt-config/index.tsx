@@ -5,7 +5,7 @@ import {
   Mode,
   type ModeType,
   type SupportedChatModelId,
-} from "@prismcode/shared";
+} from "@prismcode543/shared";
 
 type PromptConfigContextValue = {
   mode: ModeType;

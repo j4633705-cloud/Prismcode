@@ -1,4 +1,4 @@
-import type { ModeType } from "@prismcode/shared";
+import type { ModeType } from "@prismcode543/shared";
 
 type SystemPromptParams = {
   mode: ModeType;

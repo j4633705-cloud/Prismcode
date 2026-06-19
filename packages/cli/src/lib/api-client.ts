@@ -1,5 +1,5 @@
 import { hc } from "hono/client";
-import type { AppType } from "@prismcode/server";
+import type { AppType } from "@prismcode543/server";
 import { clearAuth, getAuth } from "./auth";
 
 export const apiClient = hc<AppType>(

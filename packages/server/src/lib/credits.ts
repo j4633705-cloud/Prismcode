@@ -2,7 +2,7 @@ import {
   SUPPORTED_CHAT_MODELS,
   findSupportedChatModel,
   type ModelPricing,
-} from "@prismcode/shared";
+} from "@prismcode543/shared";
 import type { LanguageModelUsage } from "ai";
 
 type CalculateCreditsForUsageParams = {

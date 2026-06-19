@@ -1,5 +1,5 @@
 import "opentui-spinner/react";
-import { Mode, type ModeType } from "@prismcode/shared";
+import { Mode, type ModeType } from "@prismcode543/shared";
 import { useTheme } from "../providers/theme";
 
 type Props = {
