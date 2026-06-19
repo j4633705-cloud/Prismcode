@@ -30,7 +30,7 @@ export function Footer() {
           <div>
             <h4 className="mb-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Community</h4>
             <div className="flex flex-col gap-2 text-sm text-neutral-500">
-              <a href="https://github.com/prismcode/prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">GitHub</a>
+              <a href="https://github.com/j4633705-cloud/Prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">GitHub</a>
               <a href="https://discord.gg/prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Discord</a>
               <a href="https://twitter.com/prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">X / Twitter</a>
             </div>
@@ -47,10 +47,10 @@ export function Footer() {
 
         <div className="mt-12 flex items-center justify-between border-t border-neutral-800 pt-6">
           <p className="text-xs text-neutral-600">
-            &copy; {new Date().getFullYear()} PrismCode. All rights reserved.
+            &copy; {new Date().getFullYear()} PrismCode by João. All rights reserved.
           </p>
           <div className="flex gap-4 text-neutral-500">
-            <a href="https://github.com/prismcode/prismcode" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <a href="https://github.com/j4633705-cloud/Prismcode" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
               <Github size={16} className="hover:text-neutral-300 transition-colors" />
             </a>
             <a href="https://discord.gg/prismcode" target="_blank" rel="noopener noreferrer" aria-label="Discord">
