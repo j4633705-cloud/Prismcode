@@ -1,5 +1,5 @@
-import { db } from "@prismcode/database/client";
-import { logger } from "@prismcode/shared";
+import { db } from "@prismcode543/database/client";
+import { logger } from "@prismcode543/shared";
 
 export type PlanMapping = {
   free: string | null;

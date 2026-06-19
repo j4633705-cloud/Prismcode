@@ -192,6 +192,7 @@ export function getToolHandlers(skills: SkillDefinition[]): { tool: SkillTool; e
     for (const tool of (skill.manifest.tools ?? [])) {
       handlers.push({
         tool,
+        skillName: skill.manifest.name,
         execute: async (input: unknown) => {
           if (tool.implementation) {
             const implPath = join(skill.installPath, tool.implementation);

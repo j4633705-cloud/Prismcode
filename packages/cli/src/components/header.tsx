@@ -5,7 +5,7 @@ export function Header() {
         <ascii-font font="tiny" text="Prism" color="gray" />
         <ascii-font font="tiny" text="Code" />
       </box>
-      <text color="gray">by João Lucas</text>
+      <text fg="gray">by João Lucas</text>
     </box>
   );
 };

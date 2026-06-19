@@ -32,7 +32,7 @@ export const SearchDialogContent = () => {
   const { show } = useToast();
   const { isTopLayer } = useKeyboardLayer();
   const { colors } = useTheme();
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) {
@@ -132,7 +132,7 @@ export const SearchDialogContent = () => {
                 onMouseDown={() => handleSelect(hit)}
               >
                 <box flexDirection="row" height={1} overflow="hidden" paddingX={1}>
-                  <text selectable={false} fg={isSelected ? "black" : "white"} bold>
+                  <text selectable={false} fg={isSelected ? "black" : "white"} attributes={TextAttributes.BOLD}>
                     {hit.sessionTitle}
                   </text>
                   <box flexGrow={1} />

@@ -1,19 +1,16 @@
 import { createClerkClient } from "@clerk/backend";
 
-if (!process.env.CLERK_SECRET_KEY) {
-  throw new Error("CLERK_SECRET_KEY environment variable is required");
+function getClerk() {
+  const secretKey = process.env.CLERK_SECRET_KEY;
+  const publishableKey = process.env.CLERK_PUBLISHABLE_KEY;
+  if (!secretKey || !publishableKey) return null;
+  return createClerkClient({ secretKey, publishableKey });
 }
-
-if (!process.env.CLERK_PUBLISHABLE_KEY) {
-  throw new Error("CLERK_PUBLISHABLE_KEY environment variable is required");
-}
-
-const clerkClient = createClerkClient({
-  secretKey: process.env.CLERK_SECRET_KEY,
-  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
-});
 
 export async function authenticateOAuthRequest(request: Request) {
+  const clerkClient = getClerk();
+  if (!clerkClient) return null;
+
   const requestState = await clerkClient.authenticateRequest(request, {
     acceptsToken: ["session_token", "oauth_token"],
   });

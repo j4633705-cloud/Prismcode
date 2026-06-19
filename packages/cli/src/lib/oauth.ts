@@ -54,7 +54,7 @@ export async function performLogin() {
   return new Promise<{ token: string }>((resolve, reject) => {
     const server = Bun.serve({
       port: 0,
-      async fetch(req) {
+      async fetch(req: any) {
         const url = new URL(req.url);
 
         if (url.pathname !== "/callback") {

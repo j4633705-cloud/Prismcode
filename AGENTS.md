@@ -29,3 +29,39 @@
 ## Polar.sh billing errors (401 invalid_token)
 - The server no longer crashes if Polar is misconfigured. Billing endpoints return friendly error messages.
 - **Fix:** Update your `POLAR_ACCESS_TOKEN` in `.env`. Or remove all `POLAR_*` vars to disable billing entirely.
+
+# Publishing
+
+## npm publish (manual)
+Publish all packages in dependency order:
+```bash
+# Build first
+bun run build --filter='@prismcode543/shared' --filter='@prismcode543/database' --filter='@prismcode543/server' --filter='@prismcode543/cli' --filter='@prismcode543/mcp-server'
+
+# Publish each (bun publish auto-replaces workspace:* with actual version)
+bun publish --access public --cwd packages/shared
+bun publish --access public --cwd packages/database
+bun publish --access public --cwd packages/server
+bun publish --access public --cwd packages/mcp-server
+bun publish --access public --cwd packages/cli
+```
+
+## npm publish (CI)
+- **Trigger:** Create a GitHub Release (tag `v*`), or manually via `workflow_dispatch`
+- **Workflow:** `.github/workflows/publish.yml`
+- **Requires:** `NPM_TOKEN` secret in GitHub repository settings
+
+## GitHub Release (binary)
+- **Trigger:** Push a tag `v*` (e.g. `v0.2.0`)
+- **Workflow:** `.github/workflows/release.yml`
+- **Output:** Windows, Linux, macOS binaries uploaded as release artifacts
+
+## Version bumps
+- All packages in the monorepo share the same version convention
+- Before publishing, update `version` in packages that changed
+- Use `bunx semver` or manual edit — no changesets configured yet
+
+## Prerequisites for first publish
+1. `npm login` (or `bun login`) — authenticate with npm registry
+2. Create `NPM_TOKEN` secret in GitHub repo settings → `.github/workflows/publish.yml` uses it
+3. Run `bun publish --dry-run --access public --cwd packages/shared` to verify package contents

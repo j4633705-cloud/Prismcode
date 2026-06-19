@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "@prismcode543/shared",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,7 +27,19 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
-    "typescript": "^6.0.3",
+    "typescript": "^5.8.3",
     "vitest": "^4.1.9"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j4633705-cloud/Prismcode.git",
+    "directory": "packages/shared"
+  },
+  "bugs": {
+    "url": "https://github.com/j4633705-cloud/Prismcode/issues"
+  },
+  "homepage": "https://github.com/j4633705-cloud/Prismcode/tree/main/packages/shared#readme"
 }

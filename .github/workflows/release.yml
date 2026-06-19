@@ -1,58 +1,43 @@
-name: Release
+name: Release Binary
 
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: Build ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - os: windows-latest
-            target: bun-windows-x64-modern
-            ext: .exe
-            asset: prismcode-win-x64.exe
-          - os: ubuntu-latest
-            target: bun-linux-x64-modern
-            ext: ""
-            asset: prismcode-linux-x64
-          - os: macos-latest
-            target: bun-darwin-x64
-            ext: ""
-            asset: prismcode-darwin-x64
-
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: oven-sh/setup-bun@v2
 
-      - run: bun install --frozen-lockfile
+      - name: Build binary
+        run: bun run build:binary
+        shell: bash
 
-      - run: bun build --compile --target=${{ matrix.target }} --outfile=dist/${{ matrix.asset }} ./packages/cli/src/index.tsx
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.asset }}
-          path: dist/*
+          name: prismcode-${{ runner.os }}
+          path: dist/prismcode*
 
   release:
-    needs: [build]
+    needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          pattern: prismcode-*
+          merge-multiple: true
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*
+          files: prismcode-*
           generate_release_notes: true

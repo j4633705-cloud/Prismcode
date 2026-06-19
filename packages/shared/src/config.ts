@@ -1,5 +1,6 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { homedir } from "node:os";
 import { z } from "zod";
 import { Mode } from "./schemas";
 
@@ -29,6 +30,17 @@ export const prismCodeConfigSchema = z.object({
     env: z.record(z.string(), z.string()).optional(),
   })).optional(),
   ignore: z.array(z.string()).optional().default(["node_modules", ".git", "dist", "build", ".next"]),
+  apiUrl: z.string().optional().describe("API server URL"),
+  defaultModel: z.string().optional().describe("Default AI model ID (alias for model)"),
+  defaultMode: z.enum([Mode.BUILD, Mode.PLAN]).optional().describe("Default mode (alias for mode)"),
+  ollama: z.object({
+    apiKey: z.string().optional(),
+    baseUrl: z.string().optional(),
+    defaultModel: z.string().optional(),
+  }).optional().describe("Ollama configuration"),
+  byok: z.record(z.string(), z.object({
+    apiKey: z.string().optional(),
+  })).optional().describe("BYOK API keys per provider"),
 });
 
 export type PrismCodeConfig = z.infer<typeof prismCodeConfigSchema>;
@@ -51,6 +63,25 @@ export function getByokKey(provider: string): string | undefined {
     return providerConfig?.apiKey || process.env[`${provider.toUpperCase()}_API_KEY`];
   } catch {
     return undefined;
+  }
+}
+
+export const GLOBAL_CONFIG_PATH = join(homedir(), ".prismcode", "config.json");
+
+export function saveConfig(
+  config: Partial<PrismCodeConfig> & Record<string, unknown>,
+): void {
+  const dir = join(homedir(), ".prismcode");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "config.json"), JSON.stringify(config, null, 2));
+}
+
+export function loadGlobalConfig(): Partial<PrismCodeConfig> {
+  try {
+    const raw = readFileSync(GLOBAL_CONFIG_PATH, "utf-8");
+    return JSON.parse(raw);
+  } catch {
+    return {};
   }
 }
 

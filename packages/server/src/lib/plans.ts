@@ -1,5 +1,5 @@
-import { db } from "@prismcode/database/client";
-import { getPlan, getRemainingMessages, type PlanId } from "@prismcode/shared";
+import { db } from "@prismcode543/database/client";
+import { getPlan, getRemainingMessages, type PlanId } from "@prismcode543/shared";
 
 type PlanResult = {
   planId: PlanId;

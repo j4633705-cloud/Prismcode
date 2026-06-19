@@ -11,7 +11,7 @@ function resolveLocalModel(provider: Provider, modelId: string) {
   switch (provider) {
     case "anthropic": {
       const byokKey = getByokKey("anthropic");
-      return anthropic(modelId, byokKey ? { apiKey: byokKey } : undefined);
+      return (anthropic as any)(modelId, byokKey ? { apiKey: byokKey } : undefined);
     }
     case "openai": {
       const byokKey = getByokKey("openai");
@@ -26,7 +26,7 @@ function resolveLocalModel(provider: Provider, modelId: string) {
         throw new Error("Google API key not configured. Set GOOGLE_API_KEY in .env");
       }
       process.env.GOOGLE_GENERATIVE_AI_API_KEY = byokKey;
-      return google(modelId, { apiKey: byokKey });
+      return (google as any)(modelId, { apiKey: byokKey });
     }
     case "groq": {
       const byokKey = getByokKey("groq") || process.env.GROQ_API_KEY;
@@ -45,7 +45,7 @@ function resolveLocalModel(provider: Provider, modelId: string) {
       return createOpenAI({ baseURL: "https://openrouter.ai/api/v1", apiKey: byokKey })(modelId);
     }
     case "ollama": {
-      const config = loadConfig();
+      const config = loadConfig(process.cwd());
       const baseUrl = config.ollama?.baseUrl ?? process.env.OLLAMA_URL ?? "http://localhost:11434";
       const modelName = config.ollama?.defaultModel ?? "codellama";
       return createOpenAI({ baseURL: `${baseUrl}/v1` })(modelName);
@@ -56,7 +56,7 @@ function resolveLocalModel(provider: Provider, modelId: string) {
 }
 
 function getDefaultModel(): { provider: Provider; modelId: string } {
-  const config = loadConfig();
+  const config = loadConfig(process.cwd());
   if (config.defaultModel) {
     const modelId = config.defaultModel;
     if (modelId.startsWith("claude")) return { provider: "anthropic", modelId };

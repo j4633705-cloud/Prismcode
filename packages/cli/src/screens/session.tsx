@@ -43,13 +43,11 @@ function ChatMessage(
       .join("");
 
     const images = msg.parts
-      .filter((p) => p.type === "image")
+      .filter((p): p is { type: "file"; mediaType: string; url: string; filename?: string } => p.type === "file")
       .map((p) => ({
-        path: typeof p.image === "string" && p.image.startsWith("data:")
-          ? "image"
-          : String(p.image ?? ""),
-        dataUrl: typeof p.image === "string" ? p.image : "",
-        mimeType: (p as { mimeType?: string }).mimeType ?? "image/png",
+        path: p.filename ?? (p.url.startsWith("data:") ? "image" : p.url),
+        dataUrl: p.url,
+        mimeType: p.mediaType ?? "image/png",
       }));
 
     return (
@@ -79,11 +77,11 @@ function SessionChat({
   session: SessionData,
   initialPrompt?: { message: string; mode: ModeType; model: SupportedChatModelId };
 }) {
-  const [initialMessages] = useState(() => session.messages as unknown as Message[]);
+  const [initialMessages] = useState(() => (session as any).messages as unknown as Message[]);
   const { mode, model } = usePromptConfig();
   const { isTopLayer } = useKeyboardLayer();
   const { messages, status, submit, abort, interrupt, error } = useChat(
-    session.id,
+    (session as any).id,
     initialMessages
   );
   const hasSubmittedInitialPromptRef = useRef(false);
@@ -180,7 +178,7 @@ export function Session() {
 
   return (
     <SessionChat 
-      key={session.id} 
+      key={(session as any).id} 
       session={session} 
       initialPrompt={prefetched?.initialPrompt}
     />

@@ -9,34 +9,26 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - run: bun install
-
-      - run: cp .env.example .env
-
-      - name: Setup database
-        run: |
-          cd packages/database
-          bunx prisma generate
-          DATABASE_URL="file:./prisma/prismcode.db" bunx prisma db push
-
+      - run: bun install --frozen-lockfile
+      - run: cp .env.example .env || true
+      - run: bun run --cwd packages/database db:generate
       - run: bun run test
-        env:
-          DATABASE_URL: file:./packages/database/prisma/prismcode.db
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install
-      - run: bunx tsc --noEmit
+      - run: bun install --frozen-lockfile
+      - run: bun run lint

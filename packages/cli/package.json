@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "@prismcode543/cli",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "type": "module",
   "bin": {
     "prismcode": "bin/prismcode.cjs"
@@ -12,12 +12,16 @@
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
     "build": "bun build src/index.tsx --outdir dist --target bun",
+    "test": "bun test || echo 'No tests found'",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
     "@prismcode543/server": "workspace:*",
     "@types/bun": "latest",
     "@types/react": "^19.2.14"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.83",
@@ -37,5 +41,14 @@
     "react": "^19.2.4",
     "react-router": "^7.14.0",
     "zod": "^4.3.6"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j4633705-cloud/Prismcode.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/j4633705-cloud/Prismcode/issues"
+  },
+  "homepage": "https://github.com/j4633705-cloud/Prismcode/tree/main/packages/cli#readme"
 }

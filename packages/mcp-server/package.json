@@ -1,10 +1,12 @@
-{
+﻿{
   "name": "@prismcode543/mcp-server",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "bin": {
     "prismcode-mcp": "./dist/index.js"
   },
@@ -17,6 +19,7 @@
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist --target bun --format esm --external @modelcontextprotocol/sdk --external zod",
     "dev": "bun run src/index.ts",
+    "test": "bun test",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
@@ -25,6 +28,18 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
-    "typescript": "^6.0.3"
-  }
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j4633705-cloud/Prismcode.git",
+    "directory": "packages/mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/j4633705-cloud/Prismcode/issues"
+  },
+  "homepage": "https://github.com/j4633705-cloud/Prismcode/tree/main/packages/mcp-server#readme"
 }

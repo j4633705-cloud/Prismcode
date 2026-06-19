@@ -1,4 +1,4 @@
-import { loadConfig } from "@prismcode/shared";
+import { loadConfig } from "@prismcode543/shared";
 
 function color(text: string, code: string): string {
   return `\x1b[${code}m${text}\x1b[0m`;
@@ -55,7 +55,7 @@ function bar(value: number, max: number, width: number): string {
 }
 
 export async function runStats() {
-  const config = loadConfig();
+  const config = loadConfig(process.cwd());
 
   // ── Header ──
   console.log("");
@@ -83,7 +83,7 @@ export async function runStats() {
     if (!res.ok) {
       throw new Error(`Server returned ${res.status}`);
     }
-    const data = await res.json();
+    const data = await res.json() as any;
 
     console.log(`  ${bold("Usage")}`);
     console.log(`    ${dim("Today:")}     ${fmt(data.totals.messagesToday || 0)} msgs · ${fmtCredits(data.stats?.creditsUsed || 0)} credits`);

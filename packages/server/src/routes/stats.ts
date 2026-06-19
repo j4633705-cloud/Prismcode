@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { AuthenticatedEnv } from "../middleware/require-auth";
-import { db } from "@prismcode/database/client";
+import { db } from "@prismcode543/database/client";
 import { getUserPlan, getUsageStats } from "../lib/plans";
 
 const app = new Hono<AuthenticatedEnv>();

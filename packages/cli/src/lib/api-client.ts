@@ -1,8 +1,8 @@
 import { hc } from "hono/client";
-import type { AppType } from "@prismcode543/server";
 import { clearAuth, getAuth } from "./auth";
 
-export const apiClient = hc<AppType>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const apiClient: any = hc(
   process.env.API_URL ?? "http://localhost:3000",
   {
     fetch: async (

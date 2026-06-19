@@ -7,6 +7,9 @@ beforeAll(async () => {
   await ensureTestUser();
   app = createTestApp();
   app.route("/sessions", (await import("../sessions")).default);
+  // Clean up any stale sessions from previous runs
+  const { db } = await import("@prismcode543/database/client");
+  await db.session.deleteMany({ where: { userId: TEST_CLERK_ID } });
 });
 
 afterAll(async () => {

@@ -105,17 +105,14 @@ export function useChat(sessionId: string, initialMessages: Message[]) {
       model: SupportedChatModelId;
     }) => {
       if (params.images && params.images.length > 0) {
-        const parts: Message["parts"] = [
-          { type: "text" as const, text: params.userText },
-          ...params.images.map((img) => ({
-            type: "image" as const,
-            image: img.dataUrl,
-            mimeType: img.mimeType,
+        return chat.sendMessage({
+          text: params.userText,
+          files: params.images.map((img) => ({
+            type: "file" as const,
+            mediaType: img.mimeType,
+            url: img.dataUrl,
+            filename: img.path,
           })),
-        ];
-        return chat.append({
-          role: "user",
-          parts,
           metadata: { mode: params.mode, model: params.model },
         });
       }

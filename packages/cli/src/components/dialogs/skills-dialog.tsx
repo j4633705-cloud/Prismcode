@@ -7,7 +7,7 @@ import { useKeyboardLayer } from "../../providers/keyboard-layer";
 import { DialogSearchList } from "../dialog-search-list";
 import { getInstalledSkills, toggleSkill, removeSkill, installSkill } from "../../lib/skills/skill-manager";
 import type { SkillDefinition } from "@prismcode543/shared";
-import type { InputRenderable } from "@opentui/core";
+import { TextAttributes, type InputRenderable } from "@opentui/core";
 
 type SkillsDialogContentProps = {
   onSkillChanged?: () => void;
@@ -89,7 +89,7 @@ export const SkillsDialogContent = ({ onSkillChanged }: SkillsDialogContentProps
   if (view === "install") {
     return (
       <box flexDirection="column" gap={1} paddingX={1} paddingY={1}>
-        <text bold selectable={false}>Install a Skill</text>
+        <text attributes={TextAttributes.BOLD} selectable={false}>Install a Skill</text>
         <text selectable={false}>Enter a local path or URL to the skill directory:</text>
         <input
           ref={installInputRef}
@@ -97,7 +97,7 @@ export const SkillsDialogContent = ({ onSkillChanged }: SkillsDialogContentProps
           placeholder="C:\path\to\skill or https://..."
           onContentChange={handleInstallContentChange}
         />
-        <text selectable={false} dim>
+        <text selectable={false} attributes={TextAttributes.DIM}>
           Press Enter to install, Escape to cancel
         </text>
       </box>
@@ -107,10 +107,10 @@ export const SkillsDialogContent = ({ onSkillChanged }: SkillsDialogContentProps
   return (
     <box flexDirection="column" gap={1} paddingX={1} paddingY={1}>
       <box flexDirection="row" gap={1} paddingBottom={1}>
-        <text bold selectable={false}>
+        <text attributes={TextAttributes.BOLD} selectable={false}>
           Installed Skills ({skills.length})
         </text>
-        <text dim selectable={false}>
+        <text attributes={TextAttributes.DIM} selectable={false}>
           {" "}— press I to install
         </text>
       </box>
@@ -126,14 +126,14 @@ export const SkillsDialogContent = ({ onSkillChanged }: SkillsDialogContentProps
             item.manifest.description.toLowerCase().includes(query.toLowerCase())
           }
           renderItem={(item, isSelected) => (
-            <box flexDirection="row" gap={1} selectable={false}>
+            <box flexDirection="row" gap={1}>
               <text selectable={false} fg={isSelected ? "black" : "white"}>
                 {item.manifest.enabled ? "●" : "○"}
               </text>
               <text selectable={false} fg={isSelected ? "black" : "white"}>
                 {item.manifest.displayName}
               </text>
-              <text selectable={false} dim={!item.manifest.enabled}>
+              <text selectable={false} attributes={!item.manifest.enabled ? TextAttributes.DIM : undefined}>
                 v{item.manifest.version}
               </text>
             </box>

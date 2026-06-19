@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useDialog } from "../../providers/dialog";
 import { DialogSearchList } from "../dialog-search-list";
-import { Mode } from "@prismcode543/database/enums";
+import { Mode } from "@prismcode543/shared";
 import type { SupportedChatModelId } from "@prismcode543/shared";
 
 type ModelsDialogContentProps = {

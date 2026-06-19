@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { validateEvent } from "@polar-sh/sdk/webhooks";
 import { syncSubscription, cancelSubscription } from "../lib/subscription";
-import { logger } from "@prismcode/shared";
+import { logger } from "@prismcode543/shared";
 
 const app = new Hono();
 
@@ -58,7 +58,7 @@ app.post("/polar/webhook", async (c) => {
           await syncSubscription({
             polarSubscriptionId: order.subscription.id,
             customerExternalId,
-            productId: order.product.id,
+            productId: order.product?.id ?? "",
             status: "active",
             currentPeriodStart: order.subscription.currentPeriodStart.toISOString(),
             currentPeriodEnd: order.subscription.currentPeriodEnd.toISOString(),

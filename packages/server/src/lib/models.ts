@@ -91,7 +91,7 @@ function resolveOpenAIModel(modelId: OpenAIModelId): ResolvedModel {
 
 function resolveGroqModel(modelId: GroqModelId): ResolvedModel {
   return {
-    model: createGroq(modelId),
+    model: createGroq({}).languageModel(modelId) as unknown as LanguageModel,
     provider: "groq",
     modelId,
   };

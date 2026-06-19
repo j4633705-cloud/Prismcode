@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile, appendFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { saveConfig, loadConfig, SUPPORTED_CHAT_MODELS } from "@prismcode/shared";
+import { saveConfig, loadGlobalConfig, SUPPORTED_CHAT_MODELS } from "@prismcode543/shared";
 
 type ProviderInfo = {
   key: string;
@@ -125,7 +125,7 @@ export async function runInit() {
   console.log("");
 
   const existingEnv = await loadExistingEnv();
-  const existingConfig = loadConfig();
+  const existingConfig = loadGlobalConfig();
 
   // ── Detect existing config ──
   const configuredProviders = PROVIDERS.filter(
@@ -158,7 +158,8 @@ export async function runInit() {
   for (const provider of PROVIDERS) {
     console.log(`  ${color("──", provider.color)} ${bold(color(provider.label, provider.color))} ${dim("──")}`);
 
-    const existingKey = existingEnv[provider.envVar] || existingConfig.byok?.[provider.key as keyof typeof existingConfig.byok] || "";
+    const existingByokEntry = existingConfig.byok?.[provider.key as keyof typeof existingConfig.byok];
+    const existingKey = existingEnv[provider.envVar] || (typeof existingByokEntry === "string" ? existingByokEntry : existingByokEntry?.apiKey) || "";
 
     if (existingKey) {
       console.log(`    ${green("✔")} Already configured ${dim("(key exists)")}`);
@@ -213,7 +214,7 @@ export async function runInit() {
     const models = getModelsForProvider(provider.key);
     if (models.length > 0 && collectedKeys[provider.key]) {
       const defaultFromConfig = existingConfig[provider.key as keyof typeof existingConfig] as { defaultModel?: string } | undefined;
-      const defaultModel = defaultFromConfig?.defaultModel || models[0].id;
+      const defaultModel = defaultFromConfig?.defaultModel || models[0]!.id;
       console.log(`    ${dim("Available models:")}`);
       for (const m of models) {
         const isDefault = m.id === defaultModel;
@@ -289,7 +290,7 @@ export async function runInit() {
     }
   }
   if (ollamaConfig) {
-    console.log(`    ${green("✔")} ${color("Ollama", "90")} ${dim(ollamaConfig.baseUrl)}`);
+    console.log(`    ${green("✔")} ${color("Ollama", "90")} ${dim(ollamaConfig.baseUrl ?? "")}`);
   }
   if (Object.keys(collectedModels).length > 0) {
     console.log(`  ${bold("Models:")}`);
@@ -325,8 +326,8 @@ export async function runInit() {
   saveConfig({
     ...existingConfig,
     defaultModel: defaultModel || existingConfig.defaultModel,
-    defaultMode: defaultMode || existingConfig.defaultMode,
-    byok: Object.keys(byokEntries).length > 0 ? byokEntries : undefined,
+    defaultMode: (defaultMode || existingConfig.defaultMode) as "BUILD" | "PLAN" | undefined,
+    byok: Object.keys(byokEntries).length > 0 ? (byokEntries as any) : undefined,
     ollama: ollamaConfig,
     ...providerConfigs,
   });

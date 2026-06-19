@@ -7,9 +7,12 @@ import { useToast } from "../../providers/toast";
 import { apiClient } from "../../lib/api-client";
 import { getErrorMessage } from "../../lib/http-errors";
 import { DialogSearchList } from "../dialog-search-list";
-import type { InferResponseType } from "hono/client";
-
-type Session = InferResponseType<(typeof apiClient.sessions)["$get"], 200>[number];
+type Session = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export const SessionsDialogContent = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -28,7 +31,7 @@ export const SessionsDialogContent = () => {
           throw new Error(await getErrorMessage(res));
         }
 
-        const data = await res.json();
+        const data = (await res.json()) as any;
 
         if (!ignore) {
           setSessions(data);

@@ -20,9 +20,16 @@ export {
 export {
   prismCodeConfigSchema,
   loadConfig,
+  loadGlobalConfig,
+  saveConfig,
   getByokKey,
   DEFAULT_CONFIG,
   type PrismCodeConfig,
 } from "./config";
+
+export type { PlanId } from "./plans";
+export { getPlan, getRemainingMessages, PLANS } from "./plans";
+
+export { logger, LogLevel } from "./logger";
 
 export * from "./skills";

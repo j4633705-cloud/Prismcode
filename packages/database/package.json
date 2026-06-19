@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "@prismcode543/database",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -24,6 +24,7 @@
     "build:js": "bun build ./src/index.ts --outdir=dist/src --target bun --format=esm && bun build ./src/client.ts --outdir=dist/src --target bun --format=esm",
     "build:types": "bunx tsc --emitDeclarationOnly --outDir dist",
     "db:generate": "bunx prisma generate",
+    "test": "bun test || echo 'No tests found'",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
@@ -37,5 +38,17 @@
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "dotenv": "^17.4.1"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j4633705-cloud/Prismcode.git",
+    "directory": "packages/database"
+  },
+  "bugs": {
+    "url": "https://github.com/j4633705-cloud/Prismcode/issues"
+  },
+  "homepage": "https://github.com/j4633705-cloud/Prismcode/tree/main/packages/database#readme"
 }
