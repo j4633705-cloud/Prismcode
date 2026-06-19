@@ -67,13 +67,16 @@ export function Hero() {
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <button className="group inline-flex h-11 items-center gap-2.5 rounded-lg border border-neutral-700 bg-neutral-800 px-5 text-sm font-medium text-neutral-50 transition-all hover:bg-neutral-700 hover-lift active:scale-[0.98]">
+          <a
+            href="/docs"
+            className="group inline-flex h-11 items-center gap-2.5 rounded-lg border border-neutral-700 bg-neutral-800 px-5 text-sm font-medium text-neutral-50 transition-all hover:bg-neutral-700 hover-lift active:scale-[0.98]"
+          >
             <Terminal size={15} />
             Get started
             <span className="ml-0.5 rounded border border-neutral-600 px-1.5 py-0.5 text-[10px] text-neutral-400">npx</span>
-          </button>
+          </a>
           <a
-            href="https://github.com/prismcode/prismcode"
+            href="https://github.com/j4633705-cloud/Prismcode"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex h-11 items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-950/50 px-5 text-sm font-medium text-neutral-400 transition-all hover:border-neutral-700 hover:text-neutral-200 hover-lift active:scale-[0.98]"

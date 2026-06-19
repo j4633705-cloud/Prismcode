@@ -117,7 +117,7 @@ export function Pricing() {
               </ul>
 
               <a
-                href="#"
+                href={plan.name === "Enterprise" ? "https://github.com/j4633705-cloud/Prismcode" : "/docs"}
                 className={`mt-6 flex h-10 w-full items-center justify-center rounded-md text-sm font-medium transition-all active:scale-[0.98] ${
                   plan.popular
                     ? "bg-neutral-50 text-black hover:bg-neutral-200"

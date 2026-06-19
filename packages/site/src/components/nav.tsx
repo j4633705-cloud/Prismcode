@@ -53,7 +53,7 @@ export function Nav() {
             ))}
             <div className="ml-3 pl-3 border-l border-neutral-800">
               <a
-                href="https://github.com/prismcode/prismcode"
+                href="https://github.com/j4633705-cloud/Prismcode"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-neutral-800 bg-neutral-900 px-3.5 py-1.5 text-sm text-neutral-300 transition-colors hover:border-neutral-700 hover:text-neutral-50"
@@ -90,7 +90,7 @@ export function Nav() {
             </Link>
           ))}
           <a
-            href="https://github.com/prismcode/prismcode"
+            href="https://github.com/j4633705-cloud/Prismcode"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 rounded-md border border-neutral-800 bg-neutral-900 px-6 py-2.5 text-sm text-neutral-300 transition-colors hover:border-neutral-700 hover:text-neutral-50"
