@@ -76,6 +76,7 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Typecheck per package
+        id: typecheck
         run: |
           ALL_PASSED=0
           echo "## Typecheck Results" >> "$GITHUB_STEP_SUMMARY"
@@ -88,7 +89,7 @@ jobs:
               echo "- **$PKG**: no tsconfig" >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
-            OUTPUT=$(bunx tsc -p "$TSCONFIG" --noEmit 2>&1)
+            OUTPUT=$(bunx tsc -p "$TSCONFIG" --noEmit --pretty false 2>&1)
             RC=$?
             if [ $RC -ne 0 ]; then
               echo "FAILED ($RC)"
@@ -97,6 +98,10 @@ jobs:
               echo '```' >> "$GITHUB_STEP_SUMMARY"
               echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
               echo '```' >> "$GITHUB_STEP_SUMMARY"
+              # Output each error line as an annotation
+              echo "$OUTPUT" | while IFS= read -r line; do
+                echo "::error title=typecheck-$PKG::$line"
+              done
               ALL_PASSED=$RC
             else
               echo "OK"
