@@ -22,7 +22,7 @@ jobs:
         run: |
           case "${{ runner.os }}" in
             Windows) TARGET="bun-windows-x64-modern" ;;
-            macOS)   TARGET="bun-darwin-x64-modern" ;;
+            macOS)   TARGET="bun-darwin-arm64" ;;
             Linux)   TARGET="bun-linux-x64-modern" ;;
           esac
           bun build --compile --target="$TARGET" --outfile="dist/prismcode-${{ runner.os }}" ./packages/cli/src/index.tsx
