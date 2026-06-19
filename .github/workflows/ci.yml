@@ -20,17 +20,14 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: cp .env.example .env || true
       - run: bun run --cwd packages/database db:generate
-      - name: Test
+      - name: Test per package
         run: |
-          bun run test > /tmp/test_output.txt 2>&1
-          RC=$?
-          cat /tmp/test_output.txt
-          if [ -s /tmp/test_output.txt ]; then
-            head -10 /tmp/test_output.txt | while IFS= read -r line; do
-              echo "::warning::$line"
-            done
-          fi
-          exit $RC
+          ALL_PASSED=0
+          for PKG in shared database cli server mcp-server; do
+            echo "=== Test: $PKG ==="
+            bun run --cwd "packages/$PKG" test 2>&1 && echo "OK" || { echo "FAILED"; ALL_PASSED=1; }
+          done
+          exit $ALL_PASSED
 
   typecheck:
     runs-on: ubuntu-latest
@@ -48,18 +45,27 @@ jobs:
           echo "=== .bun cache ==="
           ls -la node_modules/.bun/ 2>&1 | grep opentui || true
 
-      - name: Typecheck
+      - name: Typecheck per package
         run: |
-          bunx tsc -p tsconfig.json --noEmit > /tmp/tsc_output.txt 2>&1
-          RC=$?
-          cat /tmp/tsc_output.txt
-          # Write first error line as annotation for visibility
-          if [ -s /tmp/tsc_output.txt ]; then
-            head -5 /tmp/tsc_output.txt | while IFS= read -r line; do
-              echo "::warning::$line"
-            done
-          fi
-          exit $RC
+          ALL_PASSED=0
+          for PKG in shared database cli server mcp-server; do
+            echo "=== Typecheck: $PKG ==="
+            TSCONFIG="packages/$PKG/tsconfig.json"
+            if [ ! -f "$TSCONFIG" ]; then
+              echo "SKIP (no tsconfig)"
+              continue
+            fi
+            bunx tsc -p "$TSCONFIG" --noEmit > /tmp/tsc_${PKG}.txt 2>&1
+            RC=$?
+            if [ $RC -ne 0 ]; then
+              echo "FAILED ($RC)"
+              cat /tmp/tsc_${PKG}.txt
+              ALL_PASSED=$RC
+            else
+              echo "OK"
+            fi
+          done
+          exit $ALL_PASSED
 
   lint:
     runs-on: ubuntu-latest
