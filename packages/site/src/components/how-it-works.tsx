@@ -29,26 +29,26 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-t border-neutral-800 py-24">
+    <section id="how-it-works" className="border-t border-white/10 py-24">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-16">
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mb-2 text-xs text-neutral-500 uppercase tracking-[0.15em]"
+            className="mb-2 text-xs text-neutral-500 uppercase tracking-[0]"
           >
-            How it works
+            Execution flow
           </motion.p>
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl text-neutral-50">
+          <h2 className="text-3xl font-semibold tracking-[0] sm:text-4xl text-neutral-50">
             From idea to shipped<br />in three steps
           </h2>
         </div>
 
         <div className="relative grid gap-8 md:grid-cols-3">
           {/* Connector */}
-          <div className="pointer-events-none absolute left-0 right-0 top-[52px] h-px hidden md:block">
-            <div className="h-full w-full bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800" />
+          <div className="pointer-events-none absolute left-0 right-0 top-[52px] hidden h-px md:block">
+            <div className="h-full w-full bg-gradient-to-r from-transparent via-cyan-200/25 to-transparent" />
           </div>
 
           {steps.map((step, i) => (
@@ -58,17 +58,17 @@ export function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
-              className="relative flex flex-col"
+              className="relative flex flex-col rounded-xl border border-white/10 bg-white/[0.025] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
             >
               <div className="relative z-10 mb-5 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-950">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-black shadow-[0_0_36px_rgba(34,211,238,0.08)]">
                   <step.icon size={20} className="text-neutral-300" />
                 </div>
-                <span className="text-2xl font-light text-neutral-700">{step.subtitle}</span>
+                <span className="font-mono text-2xl font-light text-neutral-700">{step.subtitle}</span>
               </div>
               <h3 className="mb-2 text-lg font-medium text-neutral-50">{step.title}</h3>
               <p className="mb-5 max-w-xs text-sm leading-relaxed text-neutral-500">{step.desc}</p>
-              <div className="mt-auto w-full max-w-[260px] rounded-lg border border-neutral-800 bg-[#050505] px-3.5 py-2.5 font-mono text-xs text-neutral-500">
+              <div className="mt-auto w-full rounded-lg border border-white/10 bg-[#050505] px-3.5 py-2.5 font-mono text-xs text-neutral-500">
                 <span className="text-neutral-600">$</span>{" "}
                 <span className="text-neutral-300">{step.code}</span>
                 <span className="ml-0.5 h-3 w-1 animate-blink bg-neutral-400 inline-block align-middle" />

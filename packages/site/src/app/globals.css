@@ -34,7 +34,9 @@
   }
 
   body {
-    background-color: #000;
+    background:
+      linear-gradient(180deg, rgba(8, 10, 12, 0.92) 0%, #000 34%),
+      #000;
     color: #fafafa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -65,9 +67,16 @@
 
   .bg-glow-hero {
     background:
-      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(250, 250, 250, 0.05) 0%, transparent 100%),
-      radial-gradient(ellipse 30% 25% at 70% 70%, rgba(250, 250, 250, 0.02) 0%, transparent 100%),
-      radial-gradient(ellipse 30% 25% at 30% 80%, rgba(250, 250, 250, 0.015) 0%, transparent 100%);
+      linear-gradient(125deg, rgba(34, 211, 238, 0.08), transparent 38%),
+      linear-gradient(235deg, rgba(16, 185, 129, 0.08), transparent 42%),
+      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(250, 250, 250, 0.05) 0%, transparent 100%);
+  }
+
+  .hero-radial {
+    background:
+      linear-gradient(115deg, rgba(34, 211, 238, 0.11) 0%, transparent 28%),
+      linear-gradient(245deg, rgba(16, 185, 129, 0.1) 0%, transparent 26%),
+      radial-gradient(ellipse 90% 42% at 50% 4%, rgba(250, 250, 250, 0.07), transparent 62%);
   }
 
   .bg-section-glow {
@@ -144,6 +153,78 @@
 
   .animate-float {
     animation: float 6s ease-in-out infinite;
+  }
+
+  .hero-stage {
+    perspective: 1200px;
+  }
+
+  .command-deck {
+    transform-style: preserve-3d;
+    animation: deck-float 9s ease-in-out infinite;
+  }
+
+  .deck-panel {
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    transform: translate3d(22px, 28px, -60px) rotateX(12deg) rotateY(-12deg);
+  }
+
+  .deck-panel-back {
+    inset: 42px 16px -20px 54px;
+    background:
+      linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(16, 185, 129, 0.04)),
+      rgba(255, 255, 255, 0.02);
+  }
+
+  .deck-panel-mid {
+    inset: 28px 42px 8px 26px;
+    transform: translate3d(-20px, 22px, -36px) rotateX(10deg) rotateY(-10deg);
+  }
+
+  .prism-core {
+    position: absolute;
+    right: -8px;
+    top: -34px;
+    height: 112px;
+    width: 112px;
+    transform-style: preserve-3d;
+    animation: prism-spin 12s linear infinite;
+  }
+
+  .prism-core-face {
+    position: absolute;
+    inset: 18px;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background:
+      linear-gradient(135deg, rgba(34, 211, 238, 0.32), rgba(255, 255, 255, 0.08) 45%, rgba(16, 185, 129, 0.22));
+    box-shadow: 0 0 48px rgba(34, 211, 238, 0.16);
+  }
+
+  .prism-core-face-a {
+    transform: rotateY(0deg) translateZ(28px);
+  }
+
+  .prism-core-face-b {
+    transform: rotateY(60deg) translateZ(28px);
+  }
+
+  .prism-core-face-c {
+    transform: rotateX(60deg) translateZ(28px);
+  }
+
+  @keyframes deck-float {
+    0%, 100% { transform: rotateX(2deg) rotateY(-7deg) translateY(0); }
+    50% { transform: rotateX(4deg) rotateY(-3deg) translateY(-10px); }
+  }
+
+  @keyframes prism-spin {
+    from { transform: rotateX(58deg) rotateZ(0deg); }
+    to { transform: rotateX(58deg) rotateZ(360deg); }
   }
 
   @keyframes fade-in-up {

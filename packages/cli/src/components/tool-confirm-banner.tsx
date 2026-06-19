@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useKeyboard } from "@opentui/react";
 import { TextAttributes } from "@opentui/core";
 import { useToolConfirm } from "../providers/tool-confirm";
@@ -6,7 +6,17 @@ import { useKeyboardLayer } from "../providers/keyboard-layer";
 
 export function ToolConfirmBanner() {
   const { pending, respond } = useToolConfirm();
-  const { isTopLayer } = useKeyboardLayer();
+  const { isTopLayer, push, pop } = useKeyboardLayer();
+
+  useEffect(() => {
+    if (!pending) {
+      pop("tool-confirm");
+      return;
+    }
+
+    push("tool-confirm");
+    return () => pop("tool-confirm");
+  }, [pending, push, pop]);
 
   const handleKey = useCallback((key: { name: string; preventDefault: () => void }) => {
     if (!pending) return;

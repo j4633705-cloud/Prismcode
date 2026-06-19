@@ -4,6 +4,7 @@ import { InputBar } from "./input-bar";
 import { Spinner } from "./spinner";
 import { usePromptConfig } from "../providers/prompt-config";
 import type { ImageAttachment } from "../hooks/use-chat";
+import { ToolConfirmBanner } from "./tool-confirm-banner";
 
 type Props = {
   children?: ReactNode;
@@ -35,6 +36,7 @@ export function SessionShell({
       <scrollbox flexGrow={1} width="100%" stickyScroll stickyStart="bottom">
         <box>{children}</box>
       </scrollbox>
+      <ToolConfirmBanner />
       <box flexShrink={0}>
         <InputBar onSubmit={onSubmit} disabled={inputDisabled} />
       </box>

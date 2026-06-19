@@ -11,6 +11,7 @@ import { type ModeType, type SupportedChatModelId, type ToolContracts } from "@p
 import { apiClient } from "../lib/api-client";
 import { getAuth } from "../lib/auth";
 import { executeLocalTool } from "../lib/local-tools";
+import { useToolConfirm } from "../providers/tool-confirm";
 
 export type ChatMessageMetadata = {
   mode?: ModeType;
@@ -35,6 +36,7 @@ export type ImageAttachment = {
 };
 
 export function useChat(sessionId: string, initialMessages: Message[]) {
+  const { confirmTool } = useToolConfirm();
   const transport = useMemo(() => {
     return new DefaultChatTransport<Message>({
       api: apiClient.chat.$url().toString(),
@@ -74,7 +76,14 @@ export function useChat(sessionId: string, initialMessages: Message[]) {
     onToolCall({ toolCall }) {
       const mode = chat.messages.at(-1)?.metadata?.mode ?? "BUILD";
 
-      void executeLocalTool(toolCall.toolName, toolCall.input, mode)
+      void confirmTool(toolCall.toolName, toolCall.input)
+        .then((confirmed) => {
+          if (!confirmed) {
+            throw new Error(`User denied ${toolCall.toolName}`);
+          }
+
+          return executeLocalTool(toolCall.toolName, toolCall.input, mode);
+        })
         .then((output) =>
           chat.addToolOutput({
             tool: toolCall.toolName as keyof ChatTools,

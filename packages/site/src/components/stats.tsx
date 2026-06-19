@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { value: 12, suffix: "K+", label: "GitHub stars" },
-  { value: 50, suffix: "K+", label: "Downloads" },
-  { value: 100, suffix: "K+", label: "Sessions run" },
-  { value: 25, suffix: "+", label: "AI providers" },
+  { value: 12, suffix: "K+", label: "GitHub stars", detail: "community momentum" },
+  { value: 50, suffix: "K+", label: "Downloads", detail: "terminal installs" },
+  { value: 100, suffix: "K+", label: "Sessions run", detail: "agent loops completed" },
+  { value: 25, suffix: "+", label: "AI providers", detail: "one interface" },
 ];
 
 function CountUp({ target, suffix }: { target: number; suffix: string }) {
@@ -44,7 +44,7 @@ function CountUp({ target, suffix }: { target: number; suffix: string }) {
   }, [target]);
 
   return (
-    <div ref={ref} className="text-3xl font-semibold tracking-tight sm:text-4xl">
+    <div ref={ref} className="text-3xl font-semibold tracking-[0] sm:text-4xl">
       <span className="text-neutral-50">
         {count}
         {suffix}
@@ -55,13 +55,14 @@ function CountUp({ target, suffix }: { target: number; suffix: string }) {
 
 export function Stats() {
   return (
-    <section className="border-t border-neutral-800 py-20">
+    <section className="border-t border-white/10 py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {stats.map((stat, i) => (
-            <div key={stat.label} className="text-center">
+        <div className="grid gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat) => (
+            <div key={stat.label} className="rounded-lg border border-white/[0.06] bg-black/35 p-5">
               <CountUp target={stat.value} suffix={stat.suffix} />
-              <div className="mt-1 text-sm text-neutral-500">{stat.label}</div>
+              <div className="mt-2 text-sm font-medium text-neutral-300">{stat.label}</div>
+              <div className="mt-1 text-xs text-neutral-600">{stat.detail}</div>
             </div>
           ))}
         </div>

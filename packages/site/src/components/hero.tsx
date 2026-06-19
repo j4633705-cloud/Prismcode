@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Terminal, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, GitBranch, Sparkles, Terminal, Zap } from "lucide-react";
 
 function CursorGlow({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
   const [pos, setPos] = useState({ x: 50, y: 50 });
@@ -34,111 +34,142 @@ export function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section ref={heroRef} className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-16">
+    <section ref={heroRef} className="relative overflow-hidden px-6 pb-20 pt-28 sm:pt-32">
       <CursorGlow containerRef={heroRef} />
-      <div className="bg-prism-pattern pointer-events-none absolute inset-0 opacity-40" />
-      <div className="bg-glow-hero pointer-events-none absolute inset-0" />
+      <div className="bg-prism-pattern pointer-events-none absolute inset-0 opacity-35" />
+      <div className="hero-radial pointer-events-none absolute inset-0" />
 
-      {/* Floating diamonds */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="prism-diamond absolute left-[15%] top-[20%] h-8 w-8 border border-neutral-700/20 animate-float" style={{ animationDelay: "0s" }} />
-        <div className="prism-diamond absolute right-[20%] top-[30%] h-5 w-5 border border-neutral-700/15 animate-float" style={{ animationDelay: "1.5s" }} />
-        <div className="prism-diamond absolute left-[25%] bottom-[25%] h-6 w-6 border border-neutral-700/10 animate-float" style={{ animationDelay: "3s" }} />
-        <div className="prism-diamond absolute right-[15%] bottom-[20%] h-10 w-10 border border-neutral-700/10 animate-float" style={{ animationDelay: "2s" }} />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-neutral-800 bg-neutral-950/70 px-4 py-1 text-xs text-neutral-400 backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-neutral-50 animate-beacon" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-neutral-50" />
-          </span>
-          Open source · MIT license · v1.0
-        </div>
-
-        <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-semibold leading-[0.95] tracking-tighter">
-          <span className="text-neutral-50">Ship code</span>
-          <br />
-          <span className="text-neutral-500 italic font-light">from your terminal</span>
-        </h1>
-
-        <p className="mx-auto mt-6 max-w-lg text-base text-neutral-400 sm:text-lg">
-          PrismCode understands your entire codebase. Plan, build, and ship with any AI model — without leaving your command line.
-        </p>
-
-        <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <a
-            href="/docs"
-            className="group inline-flex h-11 items-center gap-2.5 rounded-lg border border-neutral-700 bg-neutral-800 px-5 text-sm font-medium text-neutral-50 transition-all hover:bg-neutral-700 hover-lift active:scale-[0.98]"
-          >
-            <Terminal size={15} />
-            Get started
-            <span className="ml-0.5 rounded border border-neutral-600 px-1.5 py-0.5 text-[10px] text-neutral-400">npx</span>
-          </a>
-          <a
-            href="https://github.com/j4633705-cloud/Prismcode"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex h-11 items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-950/50 px-5 text-sm font-medium text-neutral-400 transition-all hover:border-neutral-700 hover:text-neutral-200 hover-lift active:scale-[0.98]"
-          >
-            View on GitHub
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
-          </a>
-        </div>
-
-        <div className="mt-8 flex items-center justify-center gap-6 text-xs text-neutral-600">
-          <span className="flex items-center gap-2">
-            <span className="h-0.5 w-4 bg-neutral-700" />
-            No config needed
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="h-0.5 w-4 bg-neutral-700" />
-            25+ AI models
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="h-0.5 w-4 bg-neutral-700" />
-            Works with any editor
-          </span>
-        </div>
-      </div>
-
-      <div className="relative z-10 mt-16 w-full max-w-xl">
-        <div className="overflow-hidden rounded-lg border border-neutral-800 bg-[#050505] shadow-2xl">
-          <div className="flex items-center gap-1.5 border-b border-neutral-800 px-4 py-2.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600" />
-            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600" />
-            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600" />
-            <span className="ml-2 text-[11px] text-neutral-500">prismcode</span>
+      <div className="relative z-10 mx-auto grid min-h-[78svh] max-w-6xl items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
+        <div>
+          <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.035] px-4 py-1.5 text-xs text-neutral-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-300 animate-beacon" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+            </span>
+            Open source agent for serious terminal workflows
           </div>
-          <div className="p-4 font-mono text-sm leading-relaxed">
-            <div className="flex items-start gap-2 text-neutral-400">
-              <span className="text-neutral-600">$</span>
-              <span className="text-neutral-200">cd my-project</span>
-            </div>
-            <div className="mt-1.5 flex items-start gap-2 text-neutral-400">
-              <span className="text-neutral-600">$</span>
-              <div>
-                <span className="text-neutral-50">prismcode</span>
-                <div className="mt-2 space-y-1">
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-neutral-500">◉</span>
-                    <span className="text-neutral-300">Plan mode</span>
-                    <span className="text-neutral-500">· Analyzing project structure...</span>
+
+          <h1 className="max-w-3xl text-[clamp(3rem,7vw,6.8rem)] font-semibold leading-[0.92] tracking-[0] text-neutral-50">
+            Ship code from a command center.
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-8 text-neutral-400 sm:text-lg">
+            PrismCode maps your repo, plans changes, runs tools, and keeps the whole loop inside the terminal. Built for fast edits, careful approvals, and multi-model work.
+          </p>
+
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/docs"
+              className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-lg border border-white/15 bg-neutral-50 px-5 text-sm font-semibold text-black shadow-[0_20px_80px_rgba(255,255,255,0.16)] transition-all hover:bg-white active:scale-[0.98]"
+            >
+              <Terminal size={16} />
+              Start building
+              <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href="https://github.com/j4633705-cloud/Prismcode"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-5 text-sm font-medium text-neutral-300 backdrop-blur-xl transition-all hover:border-white/20 hover:text-neutral-50 active:scale-[0.98]"
+            >
+              View repository
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </div>
+
+          <div className="mt-8 grid max-w-xl grid-cols-1 gap-3 text-xs text-neutral-500 sm:grid-cols-3">
+            {[
+              ["No config", "Run in any repo"],
+              ["25+ models", "Switch anytime"],
+              ["Local history", "Resume sessions"],
+            ].map(([label, detail]) => (
+              <div key={label} className="rounded-lg border border-white/10 bg-white/[0.025] p-3">
+                <div className="text-neutral-200">{label}</div>
+                <div className="mt-1">{detail}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="hero-stage relative mx-auto w-full max-w-[660px]">
+          <div className="command-deck relative">
+            <div className="deck-panel deck-panel-back" />
+            <div className="deck-panel deck-panel-mid" />
+            <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#050607]/95 shadow-[0_40px_120px_rgba(0,0,0,0.75)]">
+              <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-rose-400/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-amber-300/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-300/70" />
+                </div>
+                <div className="font-mono text-[11px] text-neutral-500">prismcode:~/nightcode</div>
+                <div className="rounded-md border border-emerald-300/20 bg-emerald-300/10 px-2 py-0.5 text-[10px] font-medium text-emerald-200">BUILD</div>
+              </div>
+
+              <div className="grid gap-0 lg:grid-cols-[1fr_190px]">
+                <div className="p-5 font-mono text-sm leading-relaxed">
+                  <div className="flex items-center gap-2 text-neutral-500">
+                    <span>$</span>
+                    <span className="text-neutral-200">prismcode</span>
                   </div>
-                  <div className="border-l border-neutral-700 pl-3 text-xs text-neutral-400 space-y-0.5">
-                    <div className="flex items-center gap-2"><span>build/</span></div>
-                    <div className="flex items-center gap-2"><span>├── src/components/header.tsx</span><span className="text-neutral-500">— fix</span></div>
-                    <div className="flex items-center gap-2"><span>├── src/lib/api.ts</span><span className="text-neutral-500">— add error handler</span></div>
-                    <div className="flex items-center gap-2"><span>└── src/styles/</span><span className="text-neutral-500">— refactor</span></div>
+                  <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                    <div className="mb-3 flex items-center gap-2 text-xs text-neutral-300">
+                      <Sparkles size={14} className="text-cyan-200" />
+                      Planning safe implementation
+                    </div>
+                    <div className="space-y-2 text-xs">
+                      {[
+                        ["scan", "src/app, packages/server"],
+                        ["edit", "components/hero.tsx"],
+                        ["verify", "typecheck, next build"],
+                      ].map(([label, value]) => (
+                        <div key={label} className="flex items-center justify-between gap-4 rounded-md bg-black/35 px-3 py-2">
+                          <span className="text-neutral-500">{label}</span>
+                          <span className="truncate text-neutral-300">{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-neutral-500 pt-1">
-                    <span className="text-neutral-400">Tab</span><span>· Plan</span><span>|</span>
-                    <span className="text-neutral-400">esc</span><span>· stop</span><span>|</span>
-                    <span className="text-neutral-400">mode</span><span>· BUILD</span>
-                    <span className="h-3 w-1 animate-blink bg-neutral-300" />
+                  <div className="mt-4 space-y-2 text-xs text-neutral-400">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 size={14} className="text-emerald-300" />
+                      Repo indexed across workspaces
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <GitBranch size={14} className="text-cyan-200" />
+                      Patch ready with approval gates
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Zap size={14} className="text-amber-200" />
+                      Tool loop active <span className="h-3 w-1 animate-blink bg-neutral-300" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-white/10 bg-white/[0.025] p-5 lg:border-l lg:border-t-0">
+                  <div className="text-xs uppercase tracking-[0] text-neutral-500">Model rail</div>
+                  <div className="mt-4 space-y-3">
+                    {["OpenAI", "Anthropic", "Gemini", "Groq"].map((model, i) => (
+                      <div key={model} className="flex items-center gap-3">
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full rounded-full bg-neutral-200" style={{ width: `${88 - i * 13}%` }} />
+                        </div>
+                        <span className="w-16 text-right text-xs text-neutral-400">{model}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 rounded-lg border border-white/10 bg-black/30 p-3">
+                    <div className="text-2xl font-semibold text-neutral-50">50</div>
+                    <div className="mt-1 text-xs text-neutral-500">tool-call steps per request</div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="prism-core" aria-hidden="true">
+              <div className="prism-core-face prism-core-face-a" />
+              <div className="prism-core-face prism-core-face-b" />
+              <div className="prism-core-face prism-core-face-c" />
             </div>
           </div>
         </div>

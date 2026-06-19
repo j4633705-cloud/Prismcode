@@ -7,8 +7,41 @@ const MAX_RESULTS = 200;
 const MAX_MATCHES = 50;
 const MAX_OUTPUT = 20_000;
 const DEFAULT_TIMEOUT = 30_000;
+const SENSITIVE_PATH_SEGMENTS = new Set([".git", "node_modules"]);
+const SENSITIVE_FILE_PATTERNS = [
+  /^\.env($|\.)/i,
+  /(^|[/\\])id_(rsa|dsa|ecdsa|ed25519)$/i,
+  /(^|[/\\]).*\.pem$/i,
+  /(^|[/\\]).*\.key$/i,
+  /(^|[/\\]).*credentials.*$/i,
+];
+const DANGEROUS_COMMAND_PATTERNS = [
+  /\brm\s+(-[^\s]*[rf][^\s]*|-[^\s]*[fr][^\s]*)\s+(\/|~|\.)?(\s|$)/i,
+  /\bgit\s+reset\s+--hard\b/i,
+  /\bgit\s+clean\s+-[^\s]*[fdx][^\s]*/i,
+  /\b(curl|wget)\b[\s\S]*(\||;|&&)\s*(sh|bash|zsh|powershell|pwsh|cmd)\b/i,
+  /\b(Invoke-WebRequest|iwr|irm|Invoke-RestMethod)\b[\s\S]*\|\s*(iex|Invoke-Expression)\b/i,
+  /\bchmod\s+-R\s+777\b/i,
+  /\bmkfs(\.|$|\s)/i,
+  /\bdd\s+if=.*\s+of=\/dev\//i,
+];
 
-function resolveInsideCwd(path: string) {
+export function assertPathAllowed(path: string, operation: "read" | "write") {
+  const normalized = path.replace(/\\/g, "/");
+  const segments = normalized.split("/").filter(Boolean);
+
+  for (const segment of segments) {
+    if (SENSITIVE_PATH_SEGMENTS.has(segment)) {
+      throw new Error(`Refusing to ${operation} protected path segment: ${segment}`);
+    }
+  }
+
+  if (SENSITIVE_FILE_PATTERNS.some((pattern) => pattern.test(normalized))) {
+    throw new Error(`Refusing to ${operation} sensitive file path: ${path}`);
+  }
+}
+
+function resolveInsideCwd(path: string, operation: "read" | "write" = "read") {
   const cwd = process.cwd();
   const resolved = resolve(cwd, path);
   const rel = relative(cwd, resolved);
@@ -17,6 +50,8 @@ function resolveInsideCwd(path: string) {
     throw new Error("Path is outside the project directory");
   }
 
+  assertPathAllowed(rel || ".", operation);
+
   return { cwd, resolved };
 }
 
@@ -24,6 +59,55 @@ function truncate(value: string, limit: number) {
   return value.length > limit
     ? `${value.slice(0, limit)}\n... (truncated, ${value.length} total chars)`
     : value;
+}
+
+async function getWorkingTreeSummary() {
+  const cwd = process.cwd();
+  const statusProc = Bun.spawn(["git", "status", "--short"], {
+    cwd,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const statProc = Bun.spawn(["git", "diff", "--stat"], {
+    cwd,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  const [statusOut, statusErr, statOut, statErr] = await Promise.all([
+    new Response(statusProc.stdout).text(),
+    new Response(statusProc.stderr).text(),
+    new Response(statProc.stdout).text(),
+    new Response(statProc.stderr).text(),
+  ]);
+  const [statusCode, statCode] = await Promise.all([statusProc.exited, statProc.exited]);
+
+  if (statusCode !== 0 || statCode !== 0) {
+    return {
+      available: false as const,
+      error: truncate((statusErr || statErr || "git summary unavailable").trim(), 500),
+    };
+  }
+
+  return {
+    available: true as const,
+    status: statusOut.trim() || "Working tree clean",
+    diffStat: statOut.trim() || "(no unstaged diff)",
+  };
+}
+
+export function assertSafeShellCommand(command: string) {
+  const compact = command.replace(/\s+/g, " ").trim();
+
+  if (!compact) {
+    throw new Error("Refusing to run an empty shell command");
+  }
+
+  for (const pattern of DANGEROUS_COMMAND_PATTERNS) {
+    if (pattern.test(compact)) {
+      throw new Error(`Refusing to run high-risk shell command: ${compact.slice(0, 180)}`);
+    }
+  }
 }
 
 export async function executeLocalTool(toolName: string, input: unknown, mode: ModeType) {
@@ -122,18 +206,19 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
     }
     case "writeFile": {
       const { path, content } = toolInputSchemas.writeFile.parse(input);
-      const { cwd, resolved } = resolveInsideCwd(path);
+      const { cwd, resolved } = resolveInsideCwd(path, "write");
       await mkdir(dirname(resolved), { recursive: true });
       await writeFile(resolved, content, "utf-8");
       return {
         success: true as const,
         path: relative(cwd, resolved),
         bytesWritten: Buffer.byteLength(content, "utf-8"),
+        workingTree: await getWorkingTreeSummary(),
       };
     }
     case "editFile": {
       const { path, oldString, newString } = toolInputSchemas.editFile.parse(input);
-      const { cwd, resolved } = resolveInsideCwd(path);
+      const { cwd, resolved } = resolveInsideCwd(path, "write");
       const content = await readFile(resolved, "utf-8");
       const occurrences = content.split(oldString).length - 1;
 
@@ -141,10 +226,15 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
       if (occurrences > 1) throw new Error(`oldString is ambiguous; found ${occurrences} matches`);
 
       await writeFile(resolved, content.replace(oldString, newString), "utf-8");
-      return { success: true as const, path: relative(cwd, resolved) };
+      return {
+        success: true as const,
+        path: relative(cwd, resolved),
+        workingTree: await getWorkingTreeSummary(),
+      };
     }
     case "bash": {
       const { command, timeout = DEFAULT_TIMEOUT } = toolInputSchemas.bash.parse(input);
+      assertSafeShellCommand(command);
       const proc = Bun.spawn(["bash", "-c", command], {
         cwd: resolveInsideCwd(".").resolved,
         stdout: "pipe",
@@ -162,6 +252,7 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
         stdout: truncate(stdout, MAX_OUTPUT),
         stderr: truncate(stderr, MAX_OUTPUT),
         exitCode,
+        workingTree: await getWorkingTreeSummary(),
       };
     }
     case "gitStatus": {
@@ -197,7 +288,10 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
       const { path, staged } = toolInputSchemas.gitDiff.parse(input);
       const args = ["diff"];
       if (staged) args.push("--staged");
-      if (path) args.push(path);
+      if (path) {
+        resolveInsideCwd(path);
+        args.push(path);
+      }
       const proc = Bun.spawn(args, {
         cwd: process.cwd(),
         stdout: "pipe",
