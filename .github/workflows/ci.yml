@@ -10,6 +10,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  ARTIFACT_DIR: ${{ github.workspace }}/ci-artifacts
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -22,6 +25,7 @@ jobs:
       - run: bun run --cwd packages/database db:generate
       - name: Test per package
         run: |
+          mkdir -p $ARTIFACT_DIR
           ALL_PASSED=0
           for PKG in shared database cli server mcp-server; do
             echo "=== Test: $PKG ==="
@@ -32,10 +36,11 @@ jobs:
             if grep -q '"test"' "packages/$PKG/package.json" 2>/dev/null; then
               OUTPUT=$(bun run --cwd "packages/$PKG" test 2>&1)
               RC=$?
+              echo "=== Test $PKG (exit=$RC) ===" >> "$ARTIFACT_DIR/test-output.txt"
+              echo "$OUTPUT" >> "$ARTIFACT_DIR/test-output.txt"
               if [ $RC -ne 0 ]; then
                 echo "FAILED"
                 echo "$OUTPUT"
-                echo "::error title=test-$PKG::$(echo "$OUTPUT" | head -1)"
                 ALL_PASSED=1
               else
                 echo "OK"
@@ -45,6 +50,13 @@ jobs:
             fi
           done
           exit $ALL_PASSED
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: /tmp/ci-artifacts/*.txt
 
   typecheck:
     runs-on: ubuntu-latest
@@ -56,17 +68,12 @@ jobs:
 
       - name: Debug package resolution
         run: |
-          echo "## Environment" >> "$GITHUB_STEP_SUMMARY"
-          echo "- bun: $(bun --version)" >> "$GITHUB_STEP_SUMMARY"
-          echo "- node: $(node --version 2>&1 || echo 'N/A')" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "### @opentui packages" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          echo "=== @opentui packages ==="
-          bun pm ls 2>&1 | grep opentui || true
-          ls -la node_modules/@opentui 2>&1 || echo "no @opentui dir at node_modules"
-          ls -la node_modules/.bun/ 2>&1 | grep opentui || true
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p $ARTIFACT_DIR
+          echo "=== Bun version: $(bun --version) ===" | tee -a $ARTIFACT_DIR/debug.txt
+          echo "=== @opentui packages ===" | tee -a $ARTIFACT_DIR/debug.txt
+          { bun pm ls 2>&1 | grep opentui || echo "(none)"; } | tee -a $ARTIFACT_DIR/debug.txt
+          { ls -la node_modules/@opentui 2>&1 || echo "no @opentui dir"; } | tee -a $ARTIFACT_DIR/debug.txt
+          { ls -la node_modules/.bun/ 2>&1 | grep opentui || echo "(none in .bun)"; } | tee -a $ARTIFACT_DIR/debug.txt
 
       - name: Typecheck per package
         run: |
@@ -80,16 +87,26 @@ jobs:
             fi
             OUTPUT=$(bunx tsc -p "$TSCONFIG" --noEmit --pretty false 2>&1)
             RC=$?
+            echo "=== Typecheck $PKG (exit=$RC) ===" >> "$ARTIFACT_DIR/typecheck-output.txt"
+            echo "$OUTPUT" >> "$ARTIFACT_DIR/typecheck-output.txt"
+            echo "=== tsc version ===" >> "$ARTIFACT_DIR/typecheck-output.txt"
+            bunx tsc --version >> "$ARTIFACT_DIR/typecheck-output.txt" 2>&1
             if [ $RC -ne 0 ]; then
               echo "FAILED ($RC)"
               echo "$OUTPUT"
-              echo "::error title=typecheck-$PKG::$(echo "$OUTPUT" | head -1)"
               ALL_PASSED=$RC
             else
               echo "OK"
             fi
           done
           exit $ALL_PASSED
+
+      - name: Upload typecheck artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-output
+          path: /tmp/ci-artifacts/*.txt
 
   lint:
     runs-on: ubuntu-latest
