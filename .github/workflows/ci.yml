@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,7 +21,6 @@ jobs:
       - run: cp .env.example .env || true
       - run: bun run --cwd packages/database db:generate
       - run: bun run test 2>&1
-        shell: bash
 
   typecheck:
     runs-on: ubuntu-latest
@@ -29,13 +32,14 @@ jobs:
 
       - name: Debug package resolution
         run: |
-          bun pm ls @opentui/core 2>&1 || true
-          ls node_modules/@opentui/ 2>&1 | head -20 || true
-        shell: bash
+          echo "=== @opentui packages ==="
+          bun pm ls 2>&1 | grep opentui || true
+          ls -la node_modules/@opentui/ 2>&1 || echo "no node_modules/@opentui"
+          echo "=== .bun cache ==="
+          ls -la node_modules/.bun/ 2>&1 | grep opentui || true
 
       - name: Typecheck
-        run: bun run typecheck 2>&1
-        shell: bash
+        run: bunx tsc -p tsconfig.json --noEmit 2>&1
 
   lint:
     runs-on: ubuntu-latest
