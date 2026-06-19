@@ -1,4 +1,4 @@
-name: Release Binary
+name: Release
 
 on:
   push:
@@ -9,44 +9,24 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build binary
-        run: |
-          case "${{ runner.os }}" in
-            Windows) TARGET="bun-windows-x64-modern" ;;
-            macOS)   TARGET="bun-darwin-arm64" ;;
-            Linux)   TARGET="bun-linux-x64-modern" ;;
-          esac
-          bun build --compile --target="$TARGET" --outfile="dist/prismcode-${{ runner.os }}" ./packages/cli/src/index.tsx
-        shell: bash
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: prismcode-${{ runner.os }}
-          path: dist/prismcode-*
-
   release:
-    needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: prismcode-*
-          merge-multiple: true
-
+      - uses: actions/checkout@v4
       - uses: softprops/action-gh-release@v2
         with:
-          files: prismcode-*
           generate_release_notes: true
+          body: |
+            ## Prismcode v1.0.0
+
+            ### Install via npm
+            ```bash
+            npm install -g @prismcode543/cli
+            ```
+
+            ### Quick start
+            ```bash
+            prismcode
+            ```
+
+            See the [README](https://github.com/j4633705-cloud/Prismcode) for full documentation.
