@@ -20,7 +20,17 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: cp .env.example .env || true
       - run: bun run --cwd packages/database db:generate
-      - run: bun run test 2>&1
+      - name: Test
+        run: |
+          bun run test > /tmp/test_output.txt 2>&1
+          RC=$?
+          cat /tmp/test_output.txt
+          if [ -s /tmp/test_output.txt ]; then
+            head -10 /tmp/test_output.txt | while IFS= read -r line; do
+              echo "::warning::$line"
+            done
+          fi
+          exit $RC
 
   typecheck:
     runs-on: ubuntu-latest
@@ -39,7 +49,17 @@ jobs:
           ls -la node_modules/.bun/ 2>&1 | grep opentui || true
 
       - name: Typecheck
-        run: bunx tsc -p tsconfig.json --noEmit 2>&1
+        run: |
+          bunx tsc -p tsconfig.json --noEmit > /tmp/tsc_output.txt 2>&1
+          RC=$?
+          cat /tmp/tsc_output.txt
+          # Write first error line as annotation for visibility
+          if [ -s /tmp/tsc_output.txt ]; then
+            head -5 /tmp/tsc_output.txt | while IFS= read -r line; do
+              echo "::warning::$line"
+            done
+          fi
+          exit $RC
 
   lint:
     runs-on: ubuntu-latest
