@@ -12,18 +12,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - run: bun --version
       - run: bun install --frozen-lockfile
       - run: cp .env.example .env || true
       - run: bun run --cwd packages/database db:generate
-      - run: bun run test
+      - run: bun run test 2>&1
+        shell: bash
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - run: bun --version
       - run: bun install --frozen-lockfile
-      - run: bun run typecheck
+
+      - name: Debug package resolution
+        run: |
+          bun pm ls @opentui/core 2>&1 || true
+          ls node_modules/@opentui/ 2>&1 | head -20 || true
+        shell: bash
+
+      - name: Typecheck
+        run: bun run typecheck 2>&1
+        shell: bash
 
   lint:
     runs-on: ubuntu-latest
