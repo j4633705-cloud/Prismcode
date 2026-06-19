@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
 var cp = require("child_process");
 var path = require("path");
 var script = path.resolve(__dirname, "../dist/index.js");

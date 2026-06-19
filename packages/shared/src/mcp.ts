@@ -1,3 +1,6 @@
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { readFileSync, existsSync } from "node:fs";
 import { logger } from "./logger";
 
 export type McpServer = {
@@ -12,14 +15,11 @@ export type McpTool = {
 };
 
 function getServersPath(): string {
-  const { homedir } = require("node:os");
-  const { join } = require("node:path");
   return join(homedir(), ".prismcode", "mcp-servers.json");
 }
 
 function loadMcpServers(): McpServer[] {
   try {
-    const { readFileSync, existsSync } = require("node:fs");
     const path = getServersPath();
     if (!existsSync(path)) return [];
     const raw = readFileSync(path, "utf-8");
