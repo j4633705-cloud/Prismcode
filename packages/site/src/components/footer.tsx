@@ -31,8 +31,7 @@ export function Footer() {
             <h4 className="mb-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Community</h4>
             <div className="flex flex-col gap-2 text-sm text-neutral-500">
               <a href="https://github.com/j4633705-cloud/Prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">GitHub</a>
-              <a href="https://discord.gg/prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Discord</a>
-              <a href="https://twitter.com/prismcode" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">X / Twitter</a>
+              <a href="https://github.com/j4633705-cloud/Prismcode/discussions" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Discussions</a>
             </div>
           </div>
 
@@ -52,12 +51,6 @@ export function Footer() {
           <div className="flex gap-4 text-neutral-500">
             <a href="https://github.com/j4633705-cloud/Prismcode" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
               <Github size={16} className="hover:text-neutral-300 transition-colors" />
-            </a>
-            <a href="https://discord.gg/prismcode" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-              <MessageCircle size={16} className="hover:text-neutral-300 transition-colors" />
-            </a>
-            <a href="https://twitter.com/prismcode" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <Twitter size={16} className="hover:text-neutral-300 transition-colors" />
             </a>
           </div>
         </div>
