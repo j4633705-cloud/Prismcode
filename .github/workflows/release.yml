@@ -19,14 +19,20 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: Build binary
-        run: bun run build:binary
+        run: |
+          case "${{ runner.os }}" in
+            Windows) TARGET="bun-windows-x64-modern" ;;
+            macOS)   TARGET="bun-darwin-x64-modern" ;;
+            Linux)   TARGET="bun-linux-x64-modern" ;;
+          esac
+          bun build --compile --target="$TARGET" --outfile="dist/prismcode-${{ runner.os }}" ./packages/cli/src/index.tsx
         shell: bash
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: prismcode-${{ runner.os }}
-          path: dist/prismcode*
+          path: dist/prismcode-*
 
   release:
     needs: build
