@@ -4,7 +4,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$RepoUrl = "https://github.com/prismcode/prismcode"
+$RepoUrl = "https://github.com/j4633705-cloud/Prismcode"
 
 # Detect architecture and platform
 $Arch = if ([Environment]::Is64BitProcess) { "x64" } else { "x86" }

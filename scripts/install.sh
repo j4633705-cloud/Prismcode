@@ -3,7 +3,7 @@ set -euo pipefail
 
 VERSION="${1:-latest}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.prismcode}"
-REPO_URL="https://github.com/prismcode/prismcode"
+REPO_URL="https://github.com/j4633705-cloud/Prismcode"
 
 # Detect OS and architecture
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
