@@ -20,6 +20,7 @@ export {
 export {
   prismCodeConfigSchema,
   loadConfig,
+  getByokKey,
   DEFAULT_CONFIG,
   type PrismCodeConfig,
 } from "./config";

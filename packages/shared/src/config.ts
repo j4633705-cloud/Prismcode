@@ -44,6 +44,16 @@ export const DEFAULT_CONFIG: PrismCodeConfig = {
   ignore: ["node_modules", ".git", "dist", "build", ".next", ".cache"],
 };
 
+export function getByokKey(provider: string): string | undefined {
+  try {
+    const config = loadConfig(process.cwd());
+    const providerConfig = config.providers?.[provider as keyof typeof config.providers];
+    return providerConfig?.apiKey || process.env[`${provider.toUpperCase()}_API_KEY`];
+  } catch {
+    return undefined;
+  }
+}
+
 export function loadConfig(cwd: string): PrismCodeConfig {
   try {
     const path = join(cwd, "prismcode.json");
