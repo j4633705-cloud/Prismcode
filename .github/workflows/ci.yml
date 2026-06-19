@@ -23,8 +23,6 @@ jobs:
       - name: Test per package
         run: |
           ALL_PASSED=0
-          echo "## Test Results" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
           for PKG in shared database cli server mcp-server; do
             echo "=== Test: $PKG ==="
             if [ ! -d "packages/$PKG" ]; then
@@ -37,18 +35,13 @@ jobs:
               if [ $RC -ne 0 ]; then
                 echo "FAILED"
                 echo "$OUTPUT"
-                echo "- **$PKG**: FAILED" >> "$GITHUB_STEP_SUMMARY"
-                echo '```' >> "$GITHUB_STEP_SUMMARY"
-                echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
-                echo '```' >> "$GITHUB_STEP_SUMMARY"
+                echo "::error title=test-$PKG::$(echo "$OUTPUT" | head -1)"
                 ALL_PASSED=1
               else
                 echo "OK"
-                echo "- $PKG: OK" >> "$GITHUB_STEP_SUMMARY"
               fi
             else
               echo "SKIP (no test script)"
-              echo "- $PKG: no test script" >> "$GITHUB_STEP_SUMMARY"
             fi
           done
           exit $ALL_PASSED
@@ -76,17 +69,13 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Typecheck per package
-        id: typecheck
         run: |
           ALL_PASSED=0
-          echo "## Typecheck Results" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
           for PKG in shared database cli server mcp-server; do
             echo "=== Typecheck: $PKG ==="
             TSCONFIG="packages/$PKG/tsconfig.json"
             if [ ! -f "$TSCONFIG" ]; then
               echo "SKIP (no tsconfig)"
-              echo "- **$PKG**: no tsconfig" >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
             OUTPUT=$(bunx tsc -p "$TSCONFIG" --noEmit --pretty false 2>&1)
@@ -94,18 +83,10 @@ jobs:
             if [ $RC -ne 0 ]; then
               echo "FAILED ($RC)"
               echo "$OUTPUT"
-              echo "- **$PKG**: FAILED" >> "$GITHUB_STEP_SUMMARY"
-              echo '```' >> "$GITHUB_STEP_SUMMARY"
-              echo "$OUTPUT" >> "$GITHUB_STEP_SUMMARY"
-              echo '```' >> "$GITHUB_STEP_SUMMARY"
-              # Output each error line as an annotation
-              echo "$OUTPUT" | while IFS= read -r line; do
-                echo "::error title=typecheck-$PKG::$line"
-              done
+              echo "::error title=typecheck-$PKG::$(echo "$OUTPUT" | head -1)"
               ALL_PASSED=$RC
             else
               echo "OK"
-              echo "- $PKG: OK" >> "$GITHUB_STEP_SUMMARY"
             fi
           done
           exit $ALL_PASSED
