@@ -1,11 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Header } from "../components/header";
 import { InputBar } from "../components/input-bar";
 import { usePromptConfig } from "../providers/prompt-config";
 import { TextAttributes } from "@opentui/core";
 
-export function Home() {
+export function Home({ initialMessage }: { initialMessage?: string }) {
   const navigate = useNavigate();
   const { mode, model } = usePromptConfig();
 
@@ -15,6 +15,12 @@ export function Home() {
     },
     [navigate, mode, model],
   );
+
+  useEffect(() => {
+    if (initialMessage && initialMessage.trim().length > 0) {
+      handleSubmit(initialMessage);
+    }
+  }, [initialMessage, handleSubmit]);
 
   return (
     <box

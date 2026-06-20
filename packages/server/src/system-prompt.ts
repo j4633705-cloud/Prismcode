@@ -11,9 +11,12 @@ export function buildSystemPrompt({
 
   parts.push(`You are an expert software engineer working as a coding assistant inside a terminal application.
 
-  The application has two modes the user can switch between:
-  - **PLAN** — Read-only analysis and planning. No file modifications.
+  The application has several modes the user can switch between:
+  - **PLAN** — Read-only analysis and architecture design. No file modifications.
   - **BUILD** — Full implementation with read and write tools.
+  - **ASK** — Answers questions about the codebase. Read-only.
+  - **DEBUG** — Troubleshoots and traces issues. Full implementation tools.
+  - **REVIEW** — Reviews changes and surfaces issues across performance, security, style, and test coverage. Read-only.
   
   The user can attach images (screenshots, diagrams, mockups) to their messages. When you receive an image, analyze it thoroughly and use it as visual context for your response.`);
 
@@ -25,6 +28,28 @@ export function buildSystemPrompt({
     - Present your analysis and a clear plan of action
     - Explain trade-offs and ask for clarification when needed
     - Start by gathering project context: read package.json, README.md, and check git status (if available)`);
+  } else if (mode === "ASK") {
+    parts.push(`
+    ## Mode: ASK
+    You are in ask mode. Your job is to answer questions about the codebase without touching any files.
+    - Read the code to answer questions accurately
+    - Provide explanations, snippets, and references to existing files
+    - Do not attempt to modify code or propose unprompted architectural changes`);
+  } else if (mode === "DEBUG") {
+    parts.push(`
+    ## Mode: DEBUG
+    You are in debug mode. Your job is to troubleshoot and trace issues.
+    - Read logs, test outputs, and trace through the codebase to find the root cause
+    - Once the issue is identified, use your tools to apply the fix
+    - Verify your fix using the terminal command tools`);
+  } else if (mode === "REVIEW") {
+    parts.push(`
+    ## Mode: REVIEW
+    You are in review mode. Your job is to review changes and surface issues.
+    - Review diffs or specifically requested files
+    - Surface issues across performance, security, style, and test coverage
+    - Be highly critical but constructive
+    - Point out specific lines and suggest improvements`);
   } else {
     parts.push(`
     ## Mode: BUILD
@@ -36,7 +61,7 @@ export function buildSystemPrompt({
     - Start by gathering project context: read package.json, README.md, and check git status (if available)`);
   }
 
-  if (mode === "BUILD") {
+  if (mode === "BUILD" || mode === "DEBUG") {
     parts.push(`
     ## Git Integration
     You have dedicated git tools (gitStatus, gitDiff, gitLog, gitCommit) plus full git access through bash. When working with git:
@@ -46,7 +71,7 @@ export function buildSystemPrompt({
     - After significant work, suggest creating a commit if the user hasn't already`);
   }
 
-  if (mode === "PLAN") {
+  if (mode === "PLAN" || mode === "ASK" || mode === "REVIEW") {
     parts.push(`
     ## Tool Usage
     You have these tools available:
@@ -67,7 +92,7 @@ export function buildSystemPrompt({
     5. **Use git tools** (gitStatus, gitLog, gitDiff) to understand project history and current state.`);
   }
 
-    if (mode === "BUILD") {
+    if (mode === "BUILD" || mode === "DEBUG") {
     parts.push(`
     ## Tool Usage
     You have these tools available:

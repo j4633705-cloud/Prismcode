@@ -5,7 +5,8 @@ var path = require("path");
 var script = path.resolve(__dirname, "../dist/index.js");
 try {
   cp.execSync("bun --version", { stdio: "ignore" });
-  cp.execSync('bun run "' + script + '"', { stdio: "inherit", env: process.env });
+  var args = process.argv.slice(2).map(a => `"${a.replace(/"/g, '\\"')}"`).join(" ");
+  cp.execSync('bun run "' + script + '" ' + args, { stdio: "inherit", env: process.env });
 } catch (e) {
   if (e.status === undefined) {
     console.error("Error: prismcode requires Bun to run.");

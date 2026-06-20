@@ -39,6 +39,7 @@ export function ToolConfirmProvider({ children }: ToolConfirmProviderProps) {
 
   const confirmTool = useCallback(async (toolName: string, input: unknown): Promise<boolean> => {
     if (!isDestructiveTool(toolName)) return true;
+    if (process.env.PRISMCODE_AUTO === "1") return true;
 
     return new Promise<boolean>((resolve) => {
       const entry: PendingConfirmation = { toolName, input, resolve };

@@ -4,9 +4,12 @@ import { tool } from "ai";
 export const Mode = {
   BUILD: "BUILD",
   PLAN: "PLAN",
+  ASK: "ASK",
+  DEBUG: "DEBUG",
+  REVIEW: "REVIEW",
 } as const;
 
-export const modeSchema = z.enum([Mode.BUILD, Mode.PLAN]);
+export const modeSchema = z.enum([Mode.BUILD, Mode.PLAN, Mode.ASK, Mode.DEBUG, Mode.REVIEW]);
 
 export type ModeType = (typeof Mode)[keyof typeof Mode];
 
@@ -121,7 +124,8 @@ export const buildToolContracts = {
 export type ToolContracts = typeof buildToolContracts;
 
 export function getToolContracts(mode: ModeType) {
-  return mode === Mode.PLAN 
-    ? readOnlyToolContracts 
-    : buildToolContracts;
+  if (mode === Mode.PLAN || mode === Mode.ASK || mode === Mode.REVIEW) {
+    return readOnlyToolContracts;
+  }
+  return buildToolContracts;
 };
